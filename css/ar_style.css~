@@ -1,0 +1,220 @@
+#arheader{
+        width: 95%;
+	color: #FFF;
+	padding: 2.5%;
+	text-align: center;
+	background-image: url('../img/All-of-us.JPG');
+	background-repeat: no-repeat;
+	background-position: left;
+	background-attachment: fixed;
+	background-size:cover;
+}
+
+#arheader h1{
+        text-align: center;
+        font-size: 3em;
+        font-weight: bold;
+        color: #FFF;
+        font-variant: small-caps;
+	margin: 0;
+	width: 80%;
+	padding: 1%;
+	border: 3px double yellow;
+	border-radius: 100px;
+	background:rgba(133, 51, 214, 0.6);
+}
+
+#arcontent{
+        min-height: 565px;
+	margin: 0;
+	padding: 4%;
+	width: 72%;
+	margin-left: 20%;
+	background: white;
+}
+
+#footer{
+}
+
+.lab{
+       width: 100%;
+       height: 100%;
+       background: none;
+}
+
+p.radio{
+        display: inline;
+}
+
+
+/*CONTENUTO DI arcontent*/
+table{
+    text-align:center;
+    margin-left:auto; 
+    margin-right:auto;
+     border-spacing: 0;
+     
+   border-collapse: collapse;
+	width:100%;
+	height:100%;
+	margin:0px;padding:0px;
+}
+
+table, th, td{
+   border: 1px solid black;
+}
+
+th{
+   background: -webkit-linear-gradient(#6600CC, #8533D6); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(#6600CC, #8533D6); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(#6600CC, #8533D6); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(#6600CC, #8533D6); /* Standard syntax */
+   height: 50px;
+   color: #FFFFFF;
+}
+
+p.buttons{
+    margin-left:auto; 
+    margin-right:auto;
+}
+
+select.selecttable {
+        width: 100%;
+}
+
+input.checkbox{
+}
+
+/* CSS "SFUMATURE" CONTENUTO */
+#help{
+	margin-top: 8%;
+}
+
+dt.info{
+	margin: 1% 0;
+	font-weight: bold;
+}
+
+dd.info{
+	margin-left: 3%;
+}
+
+
+/*MENU*/
+@import url(http://fonts.googleapis.com/css?family=Raleway:400,200);
+#armenu,
+#armenu ul,
+#armenu ul li,
+#armenu ul li a {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  list-style: none;
+  line-height: 1;
+  display: block;
+  position: relative;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+#armenu {
+        
+	width: 20%;
+	display: block;
+	float: left;
+        font-family: Raleway, sans-serif;
+        color: #ffffff;
+}
+#armenu ul ul {
+  display: none;
+}
+#armenu > ul > li.active > ul {
+  display: block;
+}
+.align-right {
+  float: right;
+}
+#armenu > ul > li > a {
+  padding: 16px 22px;
+  cursor: pointer;
+  z-index: 2;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  color: #ffffff;
+  background: #8533D6;
+  /*border:1px solid yellow;*/
+  -webkit-transition: color .2s ease;
+  -o-transition: color .2s ease;
+  transition: color .2s ease;
+}
+#armenu > ul > li > a:hover {
+  color: #E0CCF5;
+}
+#armenu ul > li.has-sub > a:after {
+  position: absolute;
+  right: 26px;
+  top: 19px;
+  z-index: 5;
+  display: block;
+  height: 10px;
+  width: 2px;
+  background: #ffffff;
+  content: "";
+  -webkit-transition: all 0.1s ease-out;
+  -moz-transition: all 0.1s ease-out;
+  -ms-transition: all 0.1s ease-out;
+  -o-transition: all 0.1s ease-out;
+  transition: all 0.1s ease-out;
+}
+#armenu ul > li.has-sub > a:before {
+  position: absolute;
+  right: 22px;
+  top: 23px;
+  display: block;
+  width: 10px;
+  height: 2px;
+  background: #ffffff;
+  content: "";
+  -webkit-transition: all 0.1s ease-out;
+  -moz-transition: all 0.1s ease-out;
+  -ms-transition: all 0.1s ease-out;
+  -o-transition: all 0.1s ease-out;
+  transition: all 0.1s ease-out;
+}
+#armenu ul > li.has-sub.open > a:after,
+#armenu ul > li.has-sub.open > a:before {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+#armenu ul ul li a {
+  padding: 14px 22px;
+  cursor: pointer;
+  z-index: 2;
+  font-size: 14px;
+  text-decoration: none;
+  color: #dddddd;
+  background: #49505a;
+  -webkit-transition: color .2s ease;
+  -o-transition: color .2s ease;
+  transition: color .2s ease;
+}
+#armenu ul ul ul li a {
+  padding-left: 32px;
+}
+#armenu ul ul li a:hover {
+  color: #000;
+  background: #B6B9BD;
+}
+#armenu ul ul > li.has-sub > a:after {
+  top: 16px;
+  right: 26px;
+  background: #dddddd;
+}
+#armenu ul ul > li.has-sub > a:before {
+  top: 20px;
+  background: #dddddd;
+}

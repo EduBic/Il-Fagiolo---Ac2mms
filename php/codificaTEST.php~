@@ -1,0 +1,11 @@
+<?php
+
+echo "<html><body>"
+
+echo
+
+echo "<p>ò è à ù ì</p>";
+
+echo "</body></html>";
+
+?>
