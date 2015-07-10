@@ -1,5 +1,5 @@
 <?php
-if(isset($_GET["Modifica"])){
+if(isset($_GET["Seleziona"])){
 	require("../private_php/print_private_area.php");
 	require_file();
 

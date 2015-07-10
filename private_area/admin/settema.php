@@ -10,8 +10,7 @@ $user="Admin";
 print_arHeader($user);
 print_arMenu($user);
 
-//print_form_selectIstanza($conn,"settema-page2.php","Assegna tema");
-print_form_setTema($conn);
+print_form_selectIstanza($conn,"settema-page2.php","Assegna tema");
 
 print_arfooter();
 print_close();

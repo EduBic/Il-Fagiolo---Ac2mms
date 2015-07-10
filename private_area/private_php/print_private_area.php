@@ -438,62 +438,72 @@ END;
     echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p></div>";
 }
 
-function print_form_setPartecipazione(){  //GRAFICA HTML
-	echo<<<END
-	<body onload="scroll()">
-	<div id="arcontent">
-		<div id="path">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Assegna Partecipanti agli Eventi dell'Anno</div>
-		<p class="query">DA SISTEMARE: da dividere in 2 pagine php</p>
-	<form id="partecipazione" action="#" method="get">
-	        <!--
-	            I PARTE: tramite query si raccolgono tutte le istanze di evento dell'anno corrente e vengono mostrate tramite 'select'
-	                     Dato l'invio si passa alla parte 2.
-	            II PARTE: avendo l'istanza di evento interessata si costruisce la tabella di aderenti che non partecipano all'istanza 
-	                     selezionata(con nome, cognome, dataNascita) e un checkbox per segnare e inviare la richiesta di partecipazione;
-		    -->
-			<fieldset>
-				<legend>Aggiungi partecipanti eventi "\$anno"</legend>
-				<p><label>Seleziona evento:</label>
-				<select>
-					<option>Campeggio</option>	
-					<option>Torneo Fagiolo</option>
-					<!-- option presi da table ISTANZA EVENTO tramite script php-->
-				</select>
-				</p>
-				<table border="1">
-					<tr>
-						<th>Nome</th>
-						<th>Cognome</th>
-						<th>Data Nascita</th>
-						<th>Partecipazione</th>
+function print_form_setPartecipazione($conn,$event){  //GRAFICA HTML
+		echo "<body onload=\"scroll()\">
+	<div id=\"arcontent\">
+		<div id=\"path\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; Assegna partecipanti</div>
+	<!-- -->";
+	
+	echo "<h1>Evento selezionato:</h1>";
+	echo "<table>
+				<thead>
+					<th>Evento</th>
+					<th>Data Inizio</th>
+					<th>Data Fine</th>
+					<th>N Partecipanti</th>
+				</thead>
+				<tbody>
+					<tr class=\"select-row\">
+						<td>".$event['evento']."</td>
+						<td>".$event['dataInizio']."</td>
+						<td>".$event['dataFine']."</td>
+						<td>".$event['nPartecipanti']."</td>
 					</tr>
-					<tr>  <!-- righa creata tramite foreach-->
-						<td>Mario</td>   <!-- info prelevato dalla query:-->
-						<td>Rossi</td>
-						<td>12/07/1990</td>
-						
-						<td>
-							<input type="checkbox" name="si">
-						</td>			
-					</tr> <!-- fine riga da creare con foreach-->
+				</tbody>
+			</table>";
+	
+	$query="SELECT id,nome,cognome,dataNascita FROM persona JOIN aderente ON Id=Persona WHERE anno=YEAR(CURDATE())";
+	echo "<p class=\"query\">".$query." *# QUERY INCOMPLETA #* </p>";
+	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
 
-					<tr>  <!-- righa creata tramite foreach-->
-						<td>Lugio</td>   <!-- info prelevato dalla query-->
-						<td>Verdi</td>
-						<td>22/04/1998</td>
-						
-						<td>
-							<input type="checkbox" name="si">
-						</td>			
-					</tr> <!-- fine riga da creare con foreach-->
-				</table>
+   $row_num=mysql_num_rows($risultato);
+   if(!$row_num){
+       echo "<h2>Nessun persona da aggiungere trovata</h2>";
+   }
+   else{
+		echo "<form id=\"setpartecipazione\" action=\"../private_php/getpartecipazione.php\" method=\"get\">";
+		echo<<<END
+	        <!--
+	            Si raccolgono tutte le persone salvate nel database.
+	            Si costruisce cosi' una tabella a video che rende disponibile la funzione di far partecipare una persona
+					all'istanza evento selezionata precedemente. N.B. tutto è considerato nell'anno in corso.
+			-->
+				<fieldset>
+				<legend>Seleziona i nuovi partecipanti</legend>
 				
-				<input class="button" type="button" name="iscrivi" value="Invio"/>
-				
-			</fieldset>
-		</form>
-	</div>
+				<table>
+					<thead>
+						<th>Nome</td>
+						<th>Cognome</td>
+						<th>Data Nascita</th>
+						<th>Aggiungi Partecipante</td>
+					</thead>
+					<tbody>
 END;
+
+        while($row=mysql_fetch_array($risultato)){
+            print_table_rows($row);
+		  		echo "<td><input type=\"checkbox\" name=\"aggiungi[]\" value=\"".$row['id']."\"></td></tr>";
+            echo "</tr>"; //chiudo la row iniziata da print_table_row
+		  }
+                
+        echo "</tbody></table>";
+		 	echo "<input type=\"hidden\" name=\"evento\" value=\"".$event['evento']."\">";
+			echo "<input type=\"hidden\" name=\"dataInizio\" value=\"".$event['dataInizio']."\">";
+        echo "<p class=\"buttons\"><input class=\"button\" type=\"reset\" value=\"Reset\"/>";
+        echo "<input class=\"button\" type=\"submit\" name=\"Invio\" value=\"Invio\"/></p></fieldset></form>";
+        }
+    echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p></div>";
 }
 
 /*function print_form_setPartecipazione($conn){
@@ -610,67 +620,59 @@ END;
     echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p></div>";
 }
 
-function print_form_setTema($conn){
+function print_form_setTema($conn,$event){
 	echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
 	<div id="path">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Assegna Tema</div>
-END;
-	
-	$query="SELECT evento, dataInizio
-			 FROM istanzaevento
-			 WHERE tema IS NULL";
-	
-	$query2="SELECT nome
-				FROM tema";
-	
-	echo "<p class=\"query\">".$query."</p>";
-	echo "<p class=\"query\">".$query2."</p>";
-	
-	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
-	$risultato2=mysql_query($query2,$conn) or die( "Ops".mysql_error());
-	
-	$row_num=mysql_num_rows($risultato);
-        if(!$row_num){
-                echo "<h2>Nessun evento privo di tema</h2>";
-                }
-        else{
-			  		 echo "<form id=\"settema\" action=\"./private_php/gettema.php\" method=\"get\">
-			<!--
-				Prelevo i nomi e le dateInizio degli eventi in istanzaevento che hanno il campo tema='null'(es. Kart Endurance 2015-04-25)
+	<!-- 		Prelevo i nomi e le dateInizio degli eventi in istanzaevento che hanno il campo tema='null'(es. Kart Endurance 2015-04-25)
 				Prelevo tutti i temi disponibili in tema e creo per ogni row la lista di temi
 				Infine costruisco il relativo pulsante univoco per ogni riga (!)
 				In questo modo all'utente è data la lista di istanze e a fianco la possibilità di assegnare un tema tra quelli
 				disponibili.
-			-->
-			<fieldset>
-				<legend>Assegna il tema ad un evento</legend>
-				<table>
-					<thead>
-						<th>Evento</th>
-						<th>Data Inizio</th>
-						<th>Tema</th>
-						<th></th>
-					</thead>
-					<tbody>";
-			  
-				 while($row=mysql_fetch_array($risultato)){
-                  echo "<tr>";
-					 	echo "<td>".$row['evento']."</td>";
-        				echo "<td>".$row['dataInizio']."</td>";
-        				echo "<td><select name=\"tema\">";
-					 while($temi=mysql_fetch_array($risultato2)){
-					 	echo "<option value=\"".$temi['nome']."\">".$temi['nome']."</option>";
-					 }
-						echo "</select></td>";
-						echo "<td><input class=\"set_button\" type=\"button\" value=\"Assegna\"/></td>";
-						echo "</tr>";
-				 }	
-			  
-			echo "</tbody></table></fieldset></form>";
-		  }
-    echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p></div>";
+				-->
+END;
+	
+	echo "<h1>Evento selezionato:</h1>";
+	echo "<table>
+				<thead>
+					<th>Evento</th>
+					<th>Data Inizio</th>
+					<th>Data Fine</th>
+					<th>N Partecipanti</th>
+				</thead>
+				<tbody>
+					<tr class=\"select-row\">
+						<td>".$event['evento']."</td>
+						<td>".$event['dataInizio']."</td>
+						<td>".$event['dataFine']."</td>
+						<td>".$event['nPartecipanti']."</td>
+					</tr>
+				</tbody>
+			</table>";
+	
+	echo "<form id=\"settema\" action=\"../private_php/gettema.php\" method=\"get\"><fieldset>";
+	echo "<legend>Seleziona il tema da assegnare</legend>";
+	
+	$query="SELECT nome FROM tema";
+	echo "<p class=\"query\">".$query."</p>";
+	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
+	
+	echo "<select name=\"tema\">";
+	while($temi=mysql_fetch_array($risultato)){
+		echo "<option value=\"".$temi['nome']."\">".$temi['nome']."</option>";
+	}
+	echo "</select>";
+	
+	echo "<input type=\"hidden\" name=\"evento\" value=\"".$event['evento']."\"/>
+			<input type=\"hidden\" name=\"dataInizio\" value=\"".$event['dataInizio']."\"/>
+			<input type=\"hidden\" name=\"dataFine\" value=\"".$event['dataFine']."\"/>
+			<input type=\"hidden\" name=\"nPartecipanti\" value=\"".$event['nPartecipanti']."\"/>";
+	echo "<input class=\"button\" type=\"submit\" name=\"Modifica\" value=\"Modifica\"/></fieldset></form>";
+	
+	echo "</div>";
 }
+
 
 /*Cancella*/
 function print_form_deleteIstanza($conn){
@@ -791,7 +793,7 @@ function print_form_selectIstanza($conn,$action,$path){
                 echo "<h2>Nessun evento di quest'anno trovato</h2>";
                 }
         else{
-			  		 echo "
+			  		 echo "<fieldset><legend>Seleziona l'evento da modificare</legend>
 			<!--
 				Prelevo i nomi e le dateInizio degli eventi in istanzaevento che hanno il campo tema='null'(es. Kart Endurance 2015-04-25)
 				Infine costruisco il relativo pulsante univoco per ogni riga per selezionare l'e vento interessato.
@@ -821,11 +823,11 @@ function print_form_selectIstanza($conn,$action,$path){
 								<input type=\"hidden\" name=\"dataFine\" value=\"".$row['dataFine']."\"/>
 								<input type=\"hidden\" name=\"nPartecipanti\" value=\"".$row['nPartecipanti']."\"/>
 								<input type=\"hidden\" name=\"tema\" value=\"".$row['tema']."\"/>
-								<input class=\"set_button\" type=\"submit\" name=\"Modifica\" value=\"Modifica\"/></form>";
+								<input class=\"set_button\" type=\"submit\" name=\"Seleziona\" value=\"Seleziona\"/></form>";
 						echo "</td>";
 					 echo "</tr>";
 				 }	
-			echo "</tbody></table>";
+			echo "</tbody></table></fieldset>";
 		  }
 	echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p></div>";
 }

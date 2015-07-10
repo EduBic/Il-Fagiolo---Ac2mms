@@ -1,17 +1,10 @@
-
-<?php //effettua la login controllando la presenza della username e della password
-if(isset($_GET["Invio"])){
-	$modifica=isset($_GET['modifica']) ? $_GET['modifica'] : array();
-	echo "<p>Aderenti da modificare: ".count($modifica)."</p>";
-	
-	foreach($modifica as $id){
-  		echo "<p>Id da modificare: ".$id;  
-  		echo " numero tappa selezionato: ".$_GET[$id]."</p>";
-	}
+<?php
+if(isset($_GET["Modifica"])){
+	echo "<p>Tema selezionato per l'evento ".$_GET['evento']." con data ".$_GET['dataInizio'].": ".$_GET['tema']."</p>";
 	/* FARE QUERY DI MODIFICA AL DATABASE */
 	}
 else
-        echo "Ops";
+   echo "Ops";
 //header('location:../setaderente.php');
 ?>
 
