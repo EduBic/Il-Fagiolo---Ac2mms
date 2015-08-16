@@ -77,26 +77,16 @@ END;
    <li><a href='./areasocio.php'>Menu</a></li>
    <li class='active has-sub'><a href='#'>Statistiche</a>
       <ul>
-         <li class='active has-sub'><a href='#'>Base</a>
-            <ul>
-               <li><a href='#'>Sub Item</a></li>
-               <li><a href='#'>Sub Item</a></li>
-            </ul>
-         </li>
-	 <li class='active has-sub'><a href='#'>Avanzate</a>
-            <ul>
-               <li><a href='#'>Sub Item</a></li>
-               <li><a href='#'>Sub Item</a></li>
-            </ul>
-         </li>
+         <li><a href='#'>Base</a></li>
+	 		<li><a href='#'>Avanzate</a></li>
       </ul>
    </li>
    <li class='active has-sub'><a href='#'>Operazioni</a>
       <ul>
         <li><a href="#">Cerca Persona</a></li>
 	<li><a href="#">Programma Evento</a></li>
-	<li><a href="#">Informazioni Tappa</a></li>
-	<li><a href="#">Dettagli Tema</a></li>
+	<li><a href="./infotappa-page1.php">Informazioni Tappa</a></li>
+	<li><a href="./dettaglitema-page1.php">Dettagli Tema</a></li>
       </ul>
    </li>
    <li><a href='#'>Query Avanzate</a></li>
@@ -190,7 +180,7 @@ END;
 
 						/*  PRINT FORM  */
 
-/*Form Admin*/
+/*AREA ADMIN*/
 
 /*Aggiungi*/
 function print_form_addPersona(){
@@ -578,7 +568,7 @@ END;
                 }
         else{
 			  		 echo "
-	<form id=\"appartenenza\" action=\"./private_php/getappartenenza.php\" method=\"get\">
+	<form id=\"appartenenza\" action=\"../private_php/getappartenenza.php\" method=\"get\">
 			<!--
 				Prelevo le info Nome Cognome DataNascita da Persona riferita agli aderenti con ruolo='AR' or 'AN' dell'anno in corso(es. 2015),
 				Ho la possibilità di assegnare ad essi una tappa tramite NumRiferimento con annoInizio dell'anno in corso(es. 2015).
@@ -833,7 +823,7 @@ function print_form_selectIstanza($conn,$action,$path){
 }
 
 
-/*Form Socio*/
+/*AREA SOCIO*/
 
 function print_formSocio(){
 	echo<<<END
@@ -841,6 +831,214 @@ function print_formSocio(){
 	<div id="arcontent">
 	</div>
 END;
+}
+
+function print_form_selectTappa($conn){
+	echo "<body onload=\"scroll()\">
+	<div id=\"arcontent\">
+		<div id=\"path\">Ti trovi in: <a href=\"./areasocio.php\">Area riservata</a> &gt;&gt; Informazioni Tappa</div>";
+	
+	$query="SELECT *
+			 FROM tappa
+			 GROUP BY annata";
+	
+	echo "<p class=\"query\">".$query."</p>";
+	
+	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
+	
+	$row_num=mysql_num_rows($risultato);
+        if(!$row_num){
+                echo "<h2>Nessun tappa esistenete nella base di dati</h2>";
+                }
+        else{
+			  		 echo "<fieldset><legend>Seleziona la tappa interessata</legend>
+			<!--
+				costruisco una select di annata delle tappe esitenti
+			-->
+				<table>
+					<thead>
+						<th>Tappa</th>
+						<th>Numero</th>
+						<th>Seleziona</th>
+					</thead>
+					<tbody>";
+			  
+				 while($row=mysql_fetch_array($risultato)){	
+                echo "<tr>";
+					 	echo "<td>".$row['annata']."</td>";
+					 	echo "<form id=\"selecttappa\" action=\"./infotappa-page2.php\" method=\"get\">";
+					 	echo "<td><select name=\"numero\">
+									<option value=\"1\">1</option>
+									<option value=\"2\">2</option>
+									<option value=\"3\">3</option>
+									<option value=\"4\">4</option>
+									<option value=\"5\">5</option>
+								</select></td>";
+						echo "<td>
+								<input type=\"hidden\" name=\"annata\" value=\"".$row['annata']."\"/>
+								<input class=\"set_button\" type=\"submit\" name=\"Seleziona\" value=\"Seleziona\"/>
+								</td>";
+					 	echo "</form>";
+					 echo "</tr>";
+				 }	
+			echo "</tbody></table></fieldset>";
+		  }
+	echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p></div>";
+}
+
+function print_infoTappa($conn,$tappa){
+	echo<<<END
+	<body onload="scroll()">
+	<div id="arcontent">
+	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Informazioni Tappa</div>
+	<!-- 		Prelevo tutti i membri con relativi dati personali di una tappa in base all'annata del 1-2-3-4-5
+				-->
+END;
+	
+	$annata=$tappa['annata'];
+	$numero=$tappa['numero'];
+	
+	$query="SELECT * FROM tappa WHERE annata='$annata' AND numRiferimento='$numero'";
+	echo "<p class=\"query\">".$query."</p>";
+	
+	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
+	
+	if($risultato!=0){
+	$tappa=mysql_fetch_array($risultato);
+	
+	echo "<h1>Tappa selezionata:</h1>";
+	echo "<table>
+				<thead>
+					<th>Tappa</th>
+					<th>Numero</th>
+					<th>Anno Inizio</th>
+					<th>Anno Fine</th>
+					<th>N Componenti</th>
+				</thead>
+				<tbody>
+					<tr class=\"select-row\">
+						<td>".$tappa['annata']."</td>
+						<td>".$tappa['numRiferimento']."</td>
+						<td>".$tappa['annoInizio']."</td>
+						<td>".$tappa['annoFine']."</td>
+						<td> N.D. </td>
+					</tr>
+				</tbody>
+			</table>";
+		
+	//trova i membri della tappa selezionata
+	$query1="SELECT P.nome, P.cognome, P.dataNascita, P.parrocchia
+				FROM aderente AS A JOIN persona AS P ON A.persona=P.id JOIN appartenenza AS AP ON AP.aderentePersona=A.persona
+				WHERE A.ruolo='AN' AND AP.tappaNumRif='".$tappa['numRiferimento']."' AND AP.tappaAnnoFine='".($annata+15)."'";
+	echo "<p class=\"query\">".$query1."</p>";
+		
+	$membri=mysql_query($query1,$conn) or die( "Ops".mysql_error());
+		
+	if(mysql_num_rows($membri)!=0){
+		echo "<h1>Animati:</h1>";
+		echo "<table>
+					<thead>
+						<th>Nome</th>
+						<th>Cognome</th>
+						<th>Data Nascita</th>
+						<th>Parrocchia</th>
+					</thead>
+					<tbody>";
+			while($membro=mysql_fetch_array($membri)){
+						echo "<tr>
+							<td>".$membro['nome']."</td>
+							<td>".$membro['cognome']."</td>
+							<td>".$membro['dataNascita']."</td>
+							<td>".$membro['parrocchia']."</td>
+						</tr>";
+			}
+		echo	"</tbody>
+				</table>";
+	}
+	else echo "<h2>Nessun animato in questa tappa</h2>";
+		
+	//trova gli animatori della tappa selezionata
+	$query2="SELECT P.nome, P.cognome, P.dataNascita, P.parrocchia
+				FROM aderente AS A JOIN persona AS P ON A.persona=P.id JOIN appartenenza AS AP ON AP.aderentePersona=A.persona
+					JOIN tappa AS T ON AP.tappaAnnoInizio=T.annoInizio AND AP.tappaAnnoFine=T.annoFine AND AP.tappaNumRif=T.numRiferimento
+				WHERE A.ruolo='AR' AND AP.tappaNumRif='".$tappa['numRiferimento']."' AND T.annata='".$annata."'";
+	echo "<p class=\"query\">".$query2."</p>";
+		
+	$animatori=mysql_query($query2,$conn) or die( "Ops".mysql_error());
+		
+	if(mysql_num_rows($animatori)!=0){
+		echo "<h1>Animatori:</h1>";
+		echo "<table>
+					<thead>
+						<th>Nome</th>
+						<th>Cgnome</th>
+						<th>Data di Nascita</th>
+						<th>Parrocchia</th>
+					</thead>
+					<tbody>";
+				while($animatore=mysql_fetch_array($animatori)){
+						echo "<tr>
+							<td>".$animatore['nome']."</td>
+							<td>".$animatore['cognome']."</td>
+							<td>".$animatore['dataNascita']."</td>
+							<td>".$animatore['parrocchia']."</td>
+						</tr>";
+				}
+		echo "</tbody>
+				</table>";
+	}
+	else echo "<h2>Nessun animatore assegnato a questa tappa</h2>";
+		
+	}
+	echo "</div>";
+}
+
+function print_form_dettagliTema($conn){
+	echo<<<END
+	<body onload="scroll()">
+	<div id="arcontent">
+	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Descrizione Tema</div>
+END;
+
+	
+	echo "<form id=\"ettaglitema\" action=\"./dettaglitema-page2.php\" method=\"get\"><fieldset>";
+	echo "<legend>Seleziona il tema desiderato</legend>";
+	
+	$query="SELECT nome FROM tema";
+	echo "<p class=\"query\">".$query."</p>";
+	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
+	
+	echo "<select name=\"nome\">";
+	while($temi=mysql_fetch_array($risultato)){
+		echo "<option value=\"".$temi['nome']."\">".$temi['nome']."</option>";
+	}
+	echo "</select>";
+	
+	echo "<input class=\"button\" type=\"submit\" name=\"Seleziona\" value=\"Seleziona\"/></fieldset></form>";
+	
+	echo "</div>";
+}
+
+function print_destema($conn,$tema){
+	echo<<<END
+	<body onload="scroll()">
+	<div id="arcontent">
+	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Descrizione Tema</div>
+END;
+
+	$nome=$tema['nome'];
+	
+	$query="SELECT descrizione FROM tema WHERE nome='$nome'";
+	echo "<p class=\"query\">".$query."</p>";
+	
+	$descrizione=mysql_query($query,$conn) or die("Ops".mysql_error());
+	
+	echo "<h1>Tema selezionato: <span class='tema'>$nome</span> </h1>";
+	echo "<h2>Descrizione:</h2>";
+	$desc=mysql_fetch_array($descrizione);
+	echo "<p> $desc[0] </p>";
+	
+	echo "</div>";
 }
 
 ?>

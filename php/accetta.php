@@ -19,18 +19,21 @@ if(isset($_POST["Login"]))
 		{
 		die("La tabella selezionata non esiste" .mysql_error());
 		}
-	if(mysql_num_rows($risultato)==1)
-		{
+	if(mysql_num_rows($risultato)==1){
 		$trovato=mysql_fetch_array($risultato);
-		$a=$trovato['username'];
-		$_SESSION['username']=$a;
-		header('location:../private_area/admin/areaadmin.php');
+		$_SESSION['username']=$trovato['username'];
+		
+		if($_SESSION['username']=="admin"){
+			header('location:../private_area/admin/areaadmin.php');
 		}
-		else
-		{
-		$_SESSION['redirect']='true';	
-		header('location:../login.php');
+		elseif($_SESSION['username']=="socio"){
+			header('location:../private_area/socio/areasocio.php');
 		}
+		else{
+			$_SESSION['redirect']='true';	
+			header('location:../login.php');
+		}
+	}
 	}
 echo "<p><a href='logout.php'>".'logout'."</a></ p>";
 ?>
