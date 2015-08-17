@@ -84,7 +84,7 @@ END;
    <li class='active has-sub'><a href='#'>Operazioni</a>
       <ul>
         <li><a href="#">Cerca Persona</a></li>
-	<li><a href="#">Programma Evento</a></li>
+	<li><a href="./progevento-page1.php">Programma Evento</a></li>
 	<li><a href="./infotappa-page1.php">Informazioni Tappa</a></li>
 	<li><a href="./dettaglitema-page1.php">Dettagli Tema</a></li>
       </ul>
@@ -765,14 +765,14 @@ function print_form_deletePartecipazione($conn, $event){
 	echo "</div>";
 }
 
-function print_form_selectIstanza($conn,$action,$path){
+function print_form_selectIstanza($conn,$action,$path,$where){
 	echo "<body onload=\"scroll()\">
 	<div id=\"arcontent\">
 		<div id=\"path\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; ".$path."</div>";
 	
 	$query="SELECT *
 			 FROM istanzaevento
-			 WHERE YEAR(dataInizio)=YEAR(CURDATE())";
+			 $where";
 	
 	echo "<p class=\"query\">".$query."</p>";
 	
@@ -891,8 +891,9 @@ function print_infoTappa($conn,$tappa){
 	<body onload="scroll()">
 	<div id="arcontent">
 	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Informazioni Tappa</div>
-	<!-- 		Prelevo tutti i membri con relativi dati personali di una tappa in base all'annata del 1-2-3-4-5
-				-->
+	<!-- 		
+		Prelevo tutti i membri con relativi dati personali di una tappa in base all'annata del 1-2-3-4-5
+	-->
 END;
 	
 	$annata=$tappa['annata'];
@@ -901,10 +902,17 @@ END;
 	$query="SELECT * FROM tappa WHERE annata='$annata' AND numRiferimento='$numero'";
 	echo "<p class=\"query\">".$query."</p>";
 	
+	$queryNumMembri="SELECT count(*) AS numeroMembri
+							FROM tappa AS T JOIN appartenenza AS A ON T.annoInizio=A.tappaAnnoInizio AND T.annoFine=A.tappaAnnoFine AND T.NumRiferimento=A.tappaNumRif
+							WHERE T.annata='$annata' AND T.numRiferimento='$numero'";
+	echo "<p class=\"query\">".$queryNumMembri." ATTENZIONE: devo togliere i componenti con ruolo ANIMATORE</p>";
+	
 	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
+	$risultato2=mysql_query($queryNumMembri,$conn) or die("Ops".mysql_error());
 	
 	if($risultato!=0){
 	$tappa=mysql_fetch_array($risultato);
+	$numMembri=mysql_fetch_array($risultato2);
 	
 	echo "<h1>Tappa selezionata:</h1>";
 	echo "<table>
@@ -921,7 +929,7 @@ END;
 						<td>".$tappa['numRiferimento']."</td>
 						<td>".$tappa['annoInizio']."</td>
 						<td>".$tappa['annoFine']."</td>
-						<td> N.D. </td>
+						<td>".$numMembri['numeroMembri']."</td>
 					</tr>
 				</tbody>
 			</table>";
@@ -1037,6 +1045,35 @@ END;
 	echo "<h2>Descrizione:</h2>";
 	$desc=mysql_fetch_array($descrizione);
 	echo "<p> $desc[0] </p>";
+	
+	echo "</div>";
+}
+
+function print_progevento($conn,$evento){
+		echo "<body onload=\"scroll()\">
+	<div id=\"arcontent\">
+		<div id=\"path\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; Programma Evento</div>";
+	
+	$nome=$evento['evento'];
+	$dataInizio=$evento['dataInizio'];
+	
+	$query="SELECT *
+			 FROM istanzaevento
+			 WHERE evento='$nome' AND dataInizio='$dataInizio'";
+
+	echo "<p class=\"query\">".$query."</p>";
+	
+	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
+	
+	$row_num=mysql_num_rows($risultato);
+	
+	if($row_num!=0){
+			$event=mysql_fetch_array($risultato);
+			echo "<h1>Evento: $nome</h1>";
+			echo "<h2>Programma:</h2>";
+			echo "<p>".$event['programma']."</p>";
+	}
+	else echo "<h1>C'è stato un problema con l'evento selezionato</h1>";
 	
 	echo "</div>";
 }

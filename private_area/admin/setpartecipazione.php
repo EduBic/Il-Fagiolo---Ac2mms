@@ -10,7 +10,7 @@ $user="Admin";
 print_arHeader($user);
 print_arMenu($user);
 
-print_form_selectIstanza($conn,"setpartecipazione-page2.php","Assegna partecipanti");
+print_form_selectIstanza($conn,"setpartecipazione-page2.php","Assegna partecipanti","WHERE YEAR(dataInizio)=YEAR(CURDATE())");
 
 print_arfooter();
 print_close();
