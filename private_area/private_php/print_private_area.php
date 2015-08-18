@@ -82,12 +82,12 @@ END;
       </ul>
    </li>
    <li class='active has-sub'><a href='#'>Operazioni</a>
-      <ul>
-        <li><a href="#">Cerca Persona</a></li>
-	<li><a href="./progevento-page1.php">Programma Evento</a></li>
-	<li><a href="./infotappa-page1.php">Informazioni Tappa</a></li>
-	<li><a href="./dettaglitema-page1.php">Dettagli Tema</a></li>
-      </ul>
+   	<ul>
+   		<li><a href="./cercapersona-page1.php">Cerca Persona</a></li>
+			<li><a href="./progevento-page1.php">Programma Evento</a></li>
+			<li><a href="./infotappa-page1.php">Informazioni Tappa</a></li>
+			<li><a href="./dettaglitema-page1.php">Dettagli Tema</a></li>
+   	</ul>
    </li>
    <li><a href='#'>Query Avanzate</a></li>
 </ul>
@@ -936,8 +936,13 @@ END;
 		
 	//trova i membri della tappa selezionata
 	$query1="SELECT P.nome, P.cognome, P.dataNascita, P.parrocchia
-				FROM aderente AS A JOIN persona AS P ON A.persona=P.id JOIN appartenenza AS AP ON AP.aderentePersona=A.persona
-				WHERE A.ruolo='AN' AND AP.tappaNumRif='".$tappa['numRiferimento']."' AND AP.tappaAnnoFine='".($annata+15)."'";
+				FROM aderente AS A JOIN persona AS P ON A.persona=P.id 
+					JOIN appartenenza AS AP ON AP.aderentePersona=A.persona AND AP.aderenteAnno=A.anno
+				WHERE A.ruolo='AN' AND 
+						AP.tappaNumRif='".$tappa['numRiferimento']."' AND 
+						AP.tappaAnnoInizio='".($annata+13+$tappa['numRiferimento'])."' AND 
+						AP.tappaAnnoFine='".($annata+14+$tappa['numRiferimento'])."'
+						GROUP BY P.Id";
 	echo "<p class=\"query\">".$query1."</p>";
 		
 	$membri=mysql_query($query1,$conn) or die( "Ops".mysql_error());
@@ -967,7 +972,8 @@ END;
 		
 	//trova gli animatori della tappa selezionata
 	$query2="SELECT P.nome, P.cognome, P.dataNascita, P.parrocchia
-				FROM aderente AS A JOIN persona AS P ON A.persona=P.id JOIN appartenenza AS AP ON AP.aderentePersona=A.persona
+				FROM aderente AS A JOIN persona AS P ON A.persona=P.id 
+					JOIN appartenenza AS AP ON AP.aderentePersona=A.persona AND AP.aderenteAnno=A.anno
 					JOIN tappa AS T ON AP.tappaAnnoInizio=T.annoInizio AND AP.tappaAnnoFine=T.annoFine AND AP.tappaNumRif=T.numRiferimento
 				WHERE A.ruolo='AR' AND AP.tappaNumRif='".$tappa['numRiferimento']."' AND T.annata='".$annata."'";
 	echo "<p class=\"query\">".$query2."</p>";
@@ -1009,7 +1015,7 @@ function print_form_dettagliTema($conn){
 END;
 
 	
-	echo "<form id=\"ettaglitema\" action=\"./dettaglitema-page2.php\" method=\"get\"><fieldset>";
+	echo "<form id=\"dettaglitema\" action=\"./dettaglitema-page2.php\" method=\"get\"><fieldset>";
 	echo "<legend>Seleziona il tema desiderato</legend>";
 	
 	$query="SELECT nome FROM tema";
@@ -1041,7 +1047,7 @@ END;
 	
 	$descrizione=mysql_query($query,$conn) or die("Ops".mysql_error());
 	
-	echo "<h1>Tema selezionato: <span class='tema'>$nome</span> </h1>";
+	echo "<h1>Tema selezionato: <span class='risultato'>$nome</span> </h1>";
 	echo "<h2>Descrizione:</h2>";
 	$desc=mysql_fetch_array($descrizione);
 	echo "<p> $desc[0] </p>";
@@ -1069,12 +1075,126 @@ function print_progevento($conn,$evento){
 	
 	if($row_num!=0){
 			$event=mysql_fetch_array($risultato);
-			echo "<h1>Evento: $nome</h1>";
+			echo "<h1>Evento: <span class=\"risultato\">$nome</span></h1>";
 			echo "<h2>Programma:</h2>";
 			echo "<p>".$event['programma']."</p>";
 	}
 	else echo "<h1>C'è stato un problema con l'evento selezionato</h1>";
 	
+	echo "</div>";
+}
+
+function print_form_cercaPersona($conn){
+	echo<<<END
+	<body onload="scroll()">
+	<div id="arcontent">
+	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Cerca Persona</div>
+END;
+
+	//Ricerca per nome e/o cognome
+	echo "<form id=\"cercapersona\" action=\"./cercapersona-page2.php\" method=\"get\"><fieldset>";
+	echo "<legend>Inserisci il nome o il cognome di chi cerchi</legend>";
+	
+	echo "<input class=\"text\" type=\"text\" name=\"ricerca\"/>";
+	echo "<input class=\"button\" type=\"submit\" name=\"Cerca\" value=\"Cerca\"/></fieldset></form>";
+	
+	echo "</div>";
+	
+}
+
+function print_cercaPersona($conn,$ricerca){
+	echo<<<END
+	<body onload="scroll()">
+	<div id="arcontent">
+	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Cerca Persona</div>
+END;
+	
+	$match=$ricerca['ricerca'];
+	
+	$query="SELECT * FROM persona WHERE nome='$match' OR cognome='$match'";
+	echo "<p class=\"query\">".$query."</p>";
+	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
+	
+	echo "<h1>Risultati ricerca</h1>";
+	
+	$row_num=mysql_num_rows($risultato);
+   if(!$row_num){
+        echo "<h2>0 risultati trovati per: <span class=\"risultato\">$match</span> </h2>";
+   }
+   else{
+		if($row_num==1)
+			echo "<h2>1 risultato trovato per: <span class=\"risultato\">$match</span> </h2>";
+		else
+			echo "<h2>Ci sono $row_num risultati trovati per: <span class=\"risultato\">$match</span> </h2>";
+		
+		echo "<fieldset><legend>Seleziona la persona di tuo interesse</legend>
+				<table>
+					<thead>
+						<th>Id</th>
+						<th>Nome</th>
+						<th>Cognome</th>
+						<th>Data di Nascita</th>
+						<th>Seleziona</th>
+					</thead>
+					<tbody>";
+		while($persona=mysql_fetch_array($risultato)){
+			echo "<tr>
+						<form id=\"selectpersona\" action=\"./cercapersona-page3.php\" method=\"get\">
+						<td>".$persona['id']."</td>
+						<td>".$persona['nome']."</td>
+						<td>".$persona['cognome']."</td>
+						<td>".$persona['dataNascita']."</td>
+						<td>
+							<input type=\"hidden\" name=\"id\" value=\"".$persona['id']."\"/>
+							<input class=\"set_button\" type=\"submit\" name=\"Seleziona\" value=\"Seleziona\"/>
+						</td>
+						</form>
+					</tr>";
+		}
+		echo "</tbody></table>";
+	}
+
+	
+	echo "</div>";
+}
+
+function print_infoPersona($conn,$persona){
+		echo<<<END
+	<body onload="scroll()">
+	<div id="arcontent">
+	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Cerca Persona</div>
+END;
+	
+	$id=$persona['id'];
+	
+	$query="SELECT * FROM persona WHERE id='$id'";
+	echo "<p class=\"query\">".$query."</p>";
+	$persona=mysql_query($query,$conn) or die('Ops'.mysql_error());
+	$dati=mysql_fetch_array($persona);
+	
+	echo "<h1>".$dati['nome']." ".$dati['cognome']."</h1>
+			<p>ID: <i>".$dati['id']."</i></p>
+			<p>Data di Nascita: <i>".$dati['dataNascita']."</i></p>
+			<p>Luogo di Nascita: <i>".$dati['luogoNascita']."</i></p>
+			<p>Telefono: <i>".$dati['telefono']."</i></p>
+			<p>email: <i>".$dati['email']."</i></p>
+			<p>Parrocchia: <i>".$dati['parrocchia']."</i></p>
+			<p>Assicurato (attualmente): <span class=\"".$dati['assicurato']."\">".$dati['assicurato']."</span></p>";
+	
+	$query1="SELECT * FROM aderente WHERE persona='$id'";
+	echo "<p class=\"query\">".$query1."</p>";
+	$aderenze=mysql_query($query1,$conn) or die('Ops'.mysql_error());
+	
+	echo "<h2>Aderenza negli anni:</h2>";
+	
+	$row_num=mysql_num_rows($aderenze);
+	if($row_num!=0){
+		while($aderenza=mysql_fetch_array($aderenze)){
+				echo "Anno: ".$aderenza['anno']." - ruolo: ".$aderenza['ruolo']."";
+		}
+	}
+	else echo "<h2>Nessun aderenza negli anni</h2>";
+
 	echo "</div>";
 }
 

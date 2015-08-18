@@ -45,6 +45,15 @@ p.radio{
         display: inline;
 }
 
+span.no{
+	color: red;
+}
+
+span.risultato{
+	font-style: italic;
+	text-decoration: underline;
+}
+
 
 /*CONTENUTO DI arcontent*/
 table{
