@@ -77,8 +77,8 @@ END;
    <li><a href='./areasocio.php'>Menu</a></li>
    <li class='active has-sub'><a href='#'>Statistiche</a>
       <ul>
-         <li><a href='#'>Base</a></li>
-	 		<li><a href='#'>Avanzate</a></li>
+         <li><a href='./stat-aderenti.php'>Aderenti</a></li>
+	 		<li><a href='./stat-eventi.php'>Eventi</a></li>
       </ul>
    </li>
    <li class='active has-sub'><a href='#'>Operazioni</a>
@@ -901,18 +901,35 @@ END;
 	
 	$query="SELECT * FROM tappa WHERE annata='$annata' AND numRiferimento='$numero'";
 	echo "<p class=\"query\">".$query."</p>";
-	
-	$queryNumMembri="SELECT count(*) AS numeroMembri
-							FROM tappa AS T JOIN appartenenza AS A ON T.annoInizio=A.tappaAnnoInizio AND T.annoFine=A.tappaAnnoFine AND T.NumRiferimento=A.tappaNumRif
-							WHERE T.annata='$annata' AND T.numRiferimento='$numero'";
-	echo "<p class=\"query\">".$queryNumMembri." ATTENZIONE: devo togliere i componenti con ruolo ANIMATORE</p>";
-	
 	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
-	$risultato2=mysql_query($queryNumMembri,$conn) or die("Ops".mysql_error());
 	
 	if($risultato!=0){
-	$tappa=mysql_fetch_array($risultato);
-	$numMembri=mysql_fetch_array($risultato2);
+		$tappa=mysql_fetch_array($risultato);
+		
+	$queryNumAN="SELECT count(*) AS numeroAN
+					FROM aderente AS A JOIN persona AS P ON A.persona=P.id 
+							JOIN appartenenza AS AP ON AP.aderentePersona=A.persona AND AP.aderenteAnno=A.anno
+					WHERE A.ruolo='AN' AND 
+							AP.tappaNumRif='".$tappa['numRiferimento']."' AND 
+							AP.tappaAnnoInizio='".($annata+13+$tappa['numRiferimento'])."' AND 
+							AP.tappaAnnoFine='".($annata+14+$tappa['numRiferimento'])."'
+					GROUP BY P.id";
+		echo "<p class=\"query\">".$queryNumAN." ATTENZIONE: confusione tra group by e count(*)</p>";
+	
+	$queryNumAR="SELECT count(*) AS numeroAR
+					FROM aderente AS A JOIN persona AS P ON A.persona=P.id 
+							JOIN appartenenza AS AP ON AP.aderentePersona=A.persona AND AP.aderenteAnno=A.anno
+					WHERE A.ruolo='AR' AND 
+							AP.tappaNumRif='".$tappa['numRiferimento']."' AND 
+							AP.tappaAnnoInizio='".($annata+13+$tappa['numRiferimento'])."' AND 
+							AP.tappaAnnoFine='".($annata+14+$tappa['numRiferimento'])."'
+					GROUP BY P.id";
+		echo "<p class=\"query\">".$queryNumAR." ATTENZIONE: confusione tra group by e count(*)</p>";
+		
+		$risultato2=mysql_query($queryNumAN,$conn) or die("Ops".mysql_error());
+		$risultato3=mysql_query($queryNumAR,$conn) or die("Ops".mysql_error());
+		$numAN=mysql_fetch_array($risultato2);
+		$numAR=mysql_fetch_array($risultato3);
 	
 	echo "<h1>Tappa selezionata:</h1>";
 	echo "<table>
@@ -921,7 +938,8 @@ END;
 					<th>Numero</th>
 					<th>Anno Inizio</th>
 					<th>Anno Fine</th>
-					<th>N Componenti</th>
+					<th>N° Animati</th>
+					<th>N° Animatori</th>
 				</thead>
 				<tbody>
 					<tr class=\"select-row\">
@@ -929,7 +947,8 @@ END;
 						<td>".$tappa['numRiferimento']."</td>
 						<td>".$tappa['annoInizio']."</td>
 						<td>".$tappa['annoFine']."</td>
-						<td>".$numMembri['numeroMembri']."</td>
+						<td>".$numAN['numeroAN']."</td>
+						<td>".$numAR['numeroAR']."</td>
 					</tr>
 				</tbody>
 			</table>";
@@ -1158,6 +1177,15 @@ END;
 	echo "</div>";
 }
 
+function print_ruolo($ruolo){
+	if($ruolo=="AN")
+		echo "Animato";
+	elseif($ruolo=="AR")
+		echo "Animatore";
+	elseif($ruolo=="GE")
+		echo "Genitore";
+}
+
 function print_infoPersona($conn,$persona){
 		echo<<<END
 	<body onload="scroll()">
@@ -1189,12 +1217,105 @@ END;
 	
 	$row_num=mysql_num_rows($aderenze);
 	if($row_num!=0){
+		echo "<table>
+				<thead>
+					<th>Anno</th>
+					<th>Ruolo</th>
+				</thead>
+				<tbody>";
 		while($aderenza=mysql_fetch_array($aderenze)){
-				echo "Anno: ".$aderenza['anno']." - ruolo: ".$aderenza['ruolo']."";
+				echo "<tr>
+							<td>".$aderenza['anno']."</td>
+							<td>";
+							print_ruolo($aderenza['ruolo']);
+				echo 		"</td>
+						</tr>";
 		}
+		echo "</tbody></table>";
 	}
 	else echo "<h2>Nessun aderenza negli anni</h2>";
+	
 
+	echo "</div>";
+}
+
+function print_statAderenti($conn){
+			echo<<<END
+	<body onload="scroll()">
+	<div id="arcontent">
+	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Cerca Persona</div>
+END;
+	
+	//Numero aderenti annuali
+	$query="SELECT count(*) AS numAderenti, ruolo, anno
+				FROM aderente
+				GROUP BY ruolo, anno";
+	echo "<p class=\"query\">".$query." ATTENZIONE: query ERRATA</p>";
+	$numAderenti=mysql_query($query,$conn) or die('Ops'.mysql_error());
+	
+	echo "<h1>Andamento aderenti negli anni</h1>";
+	$num_rows=mysql_num_rows($numAderenti);
+	if($num_rows!=0){
+		
+		echo "<table>
+					<thead>
+						<th>Anno</th>
+						<th>N° aderenti AR</th>
+						<th>N° aderenti AN</th>
+						<th>N° aderenti GE</th>
+						<th>N° aderenti TOT</th>
+					</thead>
+					<tbody>";
+		
+		while($numAderentiAnno=mysql_fetch_array($numAderenti)){
+			echo "<tr>
+						<td>".$numAderentiAnno['anno']."</td>
+						<td>".$numAderentiAnno['numAderenti']."</td>
+						<td>".$numAderentiAnno['numAderenti']."</td>
+						<td>".$numAderentiAnno['numAderenti']."</td>
+						<td> N.D. </td>
+					</tr>";
+		}
+		echo "</tbody></table>";
+	}
+	else echo "<h2>Nessun aderente trovato</h2>";
+	
+	//Numero componenti tappa negli anni
+	$query="SELECT count(*) AS numeroAN, T.annoInizio, T.annoFine, T.numRiferimento
+					FROM aderente AS A JOIN persona AS P ON A.persona=P.id 
+							JOIN appartenenza AS AP ON AP.aderentePersona=A.persona AND AP.aderenteAnno=A.anno
+							JOIN tappa AS T ON T.annoInizio=AP.tappaAnnoInizio AND T.annoFine=AP.tappaAnnoFine AND T.numRiferimento=AP.tappaNumRif
+					WHERE A.ruolo='AN'
+				GROUP BY T.annoInizio, T.annoFine, T.numRiferimento";
+	echo "<p class=\"query\">".$query." ATTENZIONE: query insoddisfacente, per avere il risultato desiderato serve un altro metodo</p>";
+	$numMembri=mysql_query($query,$conn) or die('Ops'.mysql_error());
+	
+	echo "<h1>Andamento N° componenti tappe negli anni</h1>";
+	$num_rows=mysql_num_rows($numMembri);
+	if($num_rows!=0){
+						echo "<table>
+							<thead>
+								<th>Anno inizio</th>
+								<th>Anno fine</th>
+								<th># Riferimento</th>
+								<th>N° membri</th>
+							</thead>
+							<tbody>";
+		while($numM=mysql_fetch_array($numMembri)){
+				//echo "<h2>Anno <span class=\"risultato\">".$numMembriAnno['annoInizio']." - ".$numMembriAnno['annoFine']."</span></h2>";
+					echo "		<tr>
+										<td>".$numM['annoInizio']."</td>
+										<td>".$numM['annoFine']."</td>
+										<td>".$numM['numRiferimento']."</td>
+										<td>".$numM['numeroAN']."</td>
+									</tr>";
+		}
+				echo "	</tbody>
+						</table>";
+	}
+	else echo "<h2>Nessun aderente trovato</h2>";
+	
+	
 	echo "</div>";
 }
 
