@@ -401,21 +401,18 @@ END;
 
         while($row=mysql_fetch_array($risultato)){
                 print_table_rows($row);
-                echo<<<END
+                echo "
                 <td>
-	                <select class="selecttable" name="ruolo[]">
-	                        <option value="AN">Animato</option>
-				            <option value="AR">Animatore</option>
-				            <option value="GE">Genitore</option>
+	                <select class=\"selecttable\" name=\"".$row['id']."\">
+	                        <option value=\"AN\">Animato</option>
+				            <option value=\"AR\">Animatore</option>
+				            <option value=\"GE\">Genitore</option>
 			        </select>
-		</td>
-END;
-        echo "<td>
-                    <select class=\"selecttable\" name=\"iscrivi[]\">
-	                        <option value=\"NO\">NO</option>
-				            <option value=\"" .$row['id']. "\">SI</option>
-			        </select>
-			  </td>";
+		</td>";
+		
+        echo "	<td>
+        				<input type=\"checkbox\" name=\"modifica[]\" value=\"".$row['id']."\">
+					</td>";
 		/*echo "<td><p class=\"radio\"><input class=\"radio\" type=\"radio\" name=\"iscrivi[]\" value=\"no\" checked=\"checked\"/><label class=\"lab\">No</label></p>";
 		echo "<p class=\"radio\"><input class=\"radio\" type=\"radio\" name=\"iscrivi[]\" value=\"" .$row['id']. "\"/><label class=\"lab\">Si</label></p></td>";*/
                 echo "</tr>"; //chiudo la row iniziata da print_table_rows

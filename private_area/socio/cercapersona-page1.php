@@ -15,5 +15,4 @@ print_form_cercaPersona($conn);
 print_arfooter();
 print_close();
 
-
 ?>

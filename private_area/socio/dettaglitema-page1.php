@@ -15,5 +15,4 @@ print_form_dettagliTema($conn);
 print_arfooter();
 print_close();
 
-
 ?>

@@ -15,5 +15,4 @@ print_statAderenti($conn);
 print_arfooter();
 print_close();
 
-
 ?>

@@ -15,5 +15,4 @@ print_arMenu($user);
 print_arfooter();
 print_close();
 
-
 ?>
