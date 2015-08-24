@@ -56,6 +56,7 @@ function print_arMenu($user){
 	<li><a href="./setpartecipazione.php">Partecipazione</a></li>
 	<li><a href="./setappartenenza.php">Appartenenza</a></li>
 	<li><a href="./settema.php">Tema</a></li>
+	<li><a href="./setassicurazione.php">Assicurazione</a></li>
       </ul>
    </li>
    <li class='active has-sub'><a href='#'>Cancella</a>
@@ -660,6 +661,60 @@ END;
 	echo "</div>";
 }
 
+function print_form_setAssicurazione($conn){
+		echo<<<END
+	<body onload="scroll()">
+	<div id="arcontent">
+	<div id="path">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Assegna assicurazione</div>
+END;
+
+        $query="select p.id,p.nome,p.cognome,p.dataNascita ";
+        $query.="from persona as p ";
+        $query.="where p.assicurato='no'";
+
+        echo "<p class=\"query\">".$query."</p>";
+
+        $risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
+
+        $row_num=mysql_num_rows($risultato);
+        if(!$row_num){
+                echo "<h2>Nessun persona non aderente trovata</h2>";
+                }
+        else{
+					 echo "
+				<form id=\"aderente\" action=\".././private_php/getassicurato.php\" method=\"get\">
+	        <!--
+	            Si raccolgono tutte le persone salvate nel database.
+	            Si costruisce cosi' una tabella a video che rende disponibile la funzione di impostare il ruolo della persona e iscriverla in aderente.
+	            L'azione e' consideranta nell'anno in corso.
+			-->
+				<fieldset>
+				<legend>Nuovi assicurati - anno ".date('Y')."</legend>
+				
+				<table>
+					<thead>
+						<th>Nome</td>
+						<th>Cognome</td>
+						<th>Data Nascita</th>
+						<th>Assicura</td>
+					</thead>
+					<tbody>";
+
+        while($row=mysql_fetch_array($risultato)){
+                print_table_rows($row);
+        		echo "<td>
+							<input type=\"checkbox\" name=\"modifica[]\" value=\"".$row['id']."\">
+						</td>";
+            echo "</tr>"; //chiudo la row iniziata da print_table_rows
+        }
+                
+        echo "</tbody></table>";
+        echo "<p class=\"buttons\"><input class=\"button\" type=\"reset\" value=\"Reset\"/>";
+        echo "<input class=\"button\" type=\"submit\" name=\"Invio\" value=\"Invio\"/></p></fieldset></form>";
+        }
+    echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p></div>";
+}
+
 
 /*Cancella*/
 function print_form_deleteIstanza($conn){
@@ -903,19 +958,16 @@ END;
 	if($risultato!=0){
 		$tappa=mysql_fetch_array($risultato);
 		
-	$queryNumAN="SELECT count(*) AS numeroAN
-					FROM aderente AS A JOIN persona AS P ON A.persona=P.id 
-							JOIN appartenenza AS AP ON AP.aderentePersona=A.persona AND AP.aderenteAnno=A.anno
+	$queryNumAN="SELECT DISTINCT count(*) AS numeroAN
+					FROM aderente AS A JOIN appartenenza AS AP ON AP.aderentePersona=A.persona AND AP.aderenteAnno=A.anno
 					WHERE A.ruolo='AN' AND 
 							AP.tappaNumRif='".$tappa['numRiferimento']."' AND 
 							AP.tappaAnnoInizio='".($annata+13+$tappa['numRiferimento'])."' AND 
-							AP.tappaAnnoFine='".($annata+14+$tappa['numRiferimento'])."'
-					GROUP BY P.id";
+							AP.tappaAnnoFine='".($annata+14+$tappa['numRiferimento'])."'";
 		echo "<p class=\"query\">".$queryNumAN." ATTENZIONE: confusione tra group by e count(*)</p>";
 	
 	$queryNumAR="SELECT count(*) AS numeroAR
-					FROM aderente AS A JOIN persona AS P ON A.persona=P.id 
-							JOIN appartenenza AS AP ON AP.aderentePersona=A.persona AND AP.aderenteAnno=A.anno
+					FROM aderente AS A JOIN appartenenza AS AP ON AP.aderentePersona=A.persona AND AP.aderenteAnno=A.anno
 					WHERE A.ruolo='AR' AND 
 							AP.tappaNumRif='".$tappa['numRiferimento']."' AND 
 							AP.tappaAnnoInizio='".($annata+13+$tappa['numRiferimento'])."' AND 
