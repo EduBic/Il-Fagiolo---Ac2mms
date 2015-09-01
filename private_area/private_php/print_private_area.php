@@ -55,8 +55,8 @@ function print_arMenu($user){
         <li><a href="./setaderente.php">Iscrizione Aderente</a></li>
 	<li><a href="./setpartecipazione.php">Partecipazione</a></li>
 	<li><a href="./setappartenenza.php">Appartenenza</a></li>
+		<li><a href="./setassicurazione.php">Assicurazione</a></li>
 	<li><a href="./settema.php">Tema</a></li>
-	<li><a href="./setassicurazione.php">Assicurazione</a></li>
       </ul>
    </li>
    <li class='active has-sub'><a href='#'>Cancella</a>
@@ -379,6 +379,7 @@ END;
                 echo "<h2>Nessun persona non aderente trovata</h2>";
                 }
         else{
+			  		echo "<h1>Nuove iscrizioni anno ".date('Y')."</h1>";
 					 echo<<<END
 				<form id="aderente" action=".././private_php/getaderente.php" method="get">
 	        <!--
@@ -387,7 +388,7 @@ END;
 	            L'azione e' consideranta nell'anno in corso.
 			-->
 				<fieldset>
-				<legend>Accetta le iscrizioni</legend>
+				<legend>Nuove iscrizioni</legend>
 				
 				<table>
 					<thead>
@@ -471,10 +472,10 @@ function print_form_setPartecipazione($conn,$event){  //GRAFICA HTML
 				
 				<table>
 					<thead>
-						<th>Nome</td>
-						<th>Cognome</td>
+						<th>Nome</th>
+						<th>Cognome</th>
 						<th>Data Nascita</th>
-						<th>Aggiungi Partecipante</td>
+						<th>Aggiungi Partecipante</th>
 					</thead>
 					<tbody>
 END;
@@ -493,57 +494,6 @@ END;
         }
     echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p></div>";
 }
-
-/*function print_form_setPartecipazione($conn){
-	echo<<<END
-	<div id="arcontent">
-	    <div id="path">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Assegna Partecipanti agli Eventi dell'Anno</div>
-	        <form id="partecipazione" action="#" method="get">
-	        <!--
-	                
-		    -->
-			<fieldset>
-				<legend>Aggiungi partecipanti eventi"\$anno"</legend>
-				<p><label>Seleziona evento:</label>
-				<select>
-					<option>Campeggio</option>	
-					<option>Torneo Fagiolo</option>
-					<!-- option presi da table ISTANZA EVENTO tramite script php-->
-				</select>
-				</p>
-				<table>
-					<thead>
-						<th>Nome</th>
-						<th>Cognome</th>
-						<th>Data Nascita</th>
-						<th>Partecipazione</th>
-					</thead>
-END;
-        $query=" ";
-
-        echo "<p class=\"query\">".$query."</p>";
-
-        $risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
-
-        $row_num=mysql_num_rows($risultato);
-        if(!$row_num){
-                echo "<h2>Nessun risultato trovato</h2>";
-                }
-        else{
-                echo "<tbody>";
-                while($row=mysql_fetch_array($risultato)){
-                    print_table_rows($row); //costruisco inizio row
-				    echo "<td><input class=\"checkbox\" type=\"checkbox\" name=\"partecipa\" value=\"" .$row['id']. "\"/></td>";
-                    echo "</tr>"; //chiudo row
-		            }
-	            }
-
-					
-					
-					<td>
-						<input type="checkbox" name="partecipa" value="si"/>
-					</td>	
-}*/
 
 function print_form_setAppartenenza($conn){
 	echo<<<END
@@ -565,6 +515,7 @@ END;
                 echo "<h2>Nessun aderente animatore o animato trovato</h2>";
                 }
         else{
+			  	echo "<h1>Assegna appartenenza tappe ".date('Y')."</h1>";
 			  		 echo "
 	<form id=\"appartenenza\" action=\"../private_php/getappartenenza.php\" method=\"get\">
 			<!--
@@ -668,9 +619,10 @@ function print_form_setAssicurazione($conn){
 	<div id="path">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Assegna assicurazione</div>
 END;
 
-        $query="select p.id,p.nome,p.cognome,p.dataNascita ";
-        $query.="from persona as p ";
-        $query.="where p.assicurato='no'";
+        $query="select p.id,p.nome,p.cognome,p.dataNascita
+        				from persona as p 
+		  				where p.assicurato='no'
+		  				ORDER BY p.cognome ASC";
 
         echo "<p class=\"query\">".$query."</p>";
 
@@ -681,6 +633,7 @@ END;
                 echo "<h2>Nessun persona non aderente trovata</h2>";
                 }
         else{
+			  	echo "<h1>Assicura aderenti ".date('Y')."</h1>";
 					 echo "
 				<form id=\"aderente\" action=\".././private_php/getassicurato.php\" method=\"get\">
 	        <!--
@@ -793,27 +746,51 @@ function print_form_deletePartecipazione($conn, $event){
 	echo "<form id=\"deletepartecipazione\" action=\"../private_php/deletepartecipazione.php\" method=\"get\"><fieldset>";
 	echo "<legend>Seleziona il tema da assegnare</legend>";
 	
-	//parte di settema.php non c'entra nulla qui!!!
+	$query="	SELECT PE.nome, PE.cognome, PE.dataNascita
+				FROM persona AS PE JOIN aderente AS A ON PE.id=A.persona
+				JOIN partecipazione AS P ON A.persona=P.persona & A.anno=P.anno 
+				JOIN istanzaevento AS I ON P.dataInizio=I.dataInizio & P.evento=I.evento";
 	
-	$query="SELECT nome FROM tema";
 	echo "<p class=\"query\">".$query."</p>";
 	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
 	
-	echo "<select name=\"tema\">";
-	while($temi=mysql_fetch_array($risultato)){
-		echo "<option value=\"".$temi['nome']."\">".$temi['nome']."</option>";
-	}
-	echo "</select>";
-	
-	echo "<input type=\"hidden\" name=\"evento\" value=\"".$event['evento']."\"/>
-			<input type=\"hidden\" name=\"dataInizio\" value=\"".$event['dataInizio']."\"/>
-			<input type=\"hidden\" name=\"dataFine\" value=\"".$event['dataFine']."\"/>
-			<input type=\"hidden\" name=\"nPartecipanti\" value=\"".$event['nPartecipanti']."\"/>";
-	
-	echo "<input class=\"button\" type=\"submit\" name=\"Modifica\" value=\"Modifica\"/></fieldset></form>";
-	
-	//fine parte sbagliata;
-	
+	$row_num=mysql_num_rows($risultato);
+   if(!$row_num){
+       echo "<h2>Nessun partecipante nell'evento selezionato</h2>";
+   }
+   else{
+		echo "<form id=\"deletepartecipazione\" action=\"../private_php/deletepartecipazione.php\" method=\"get\">";
+		echo	"
+	        <!--
+	            Si raccolgono tutti gli aderenti partecipanti all'istanza selezionata.
+	            Si costruisce cosi' una tabella a video che rende disponibile la funzione di eliminare i partecipanti
+					all'istanza evento selezionata precedemente. N.B. tutto dovrebbe essere considerato nell'anno in corso.
+			-->
+				<fieldset>
+				<legend>Seleziona i partecipanti da rimuovere</legend>
+				
+				<table>
+					<thead>
+						<th>Nome</th>
+						<th>Cognome</th>
+						<th>Data Nascita</th>
+						<th>Rimuovi Partecipante</th>
+					</thead>
+					<tbody>";
+
+        while($row=mysql_fetch_array($risultato)){
+            print_table_rows($row);
+		  		echo "<td><input type=\"checkbox\" name=\"elimina[]\" value=\"".$row['id']."\"></td></tr>";
+            echo "</tr>"; //chiudo la row iniziata da print_table_row
+		  }
+                
+        echo "</tbody></table>";
+		 	echo "<input type=\"hidden\" name=\"evento\" value=\"".$event['evento']."\">";
+			echo "<input type=\"hidden\" name=\"dataInizio\" value=\"".$event['dataInizio']."\">";
+        echo "<p class=\"buttons\"><input class=\"button\" type=\"reset\" value=\"Reset\"/>";
+        echo "<input class=\"button\" type=\"submit\" name=\"Invio\" value=\"Invio\"/></p></fieldset></form>";
+        }
+    echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p></div>";	
 	echo "</div>";
 }
 
@@ -835,6 +812,7 @@ function print_form_selectIstanza($conn,$action,$path,$where){
                 echo "<h2>Nessun evento di quest'anno trovato</h2>";
                 }
         else{
+			  		echo "<h1>Assegna partecipanti eventi ".date('Y')." (questo titolo non va bene per tutti :D)</h1>";
 			  		 echo "<fieldset><legend>Seleziona l'evento da modificare</legend>
 			<!--
 				Prelevo i nomi e le dateInizio degli eventi in istanzaevento che hanno il campo tema='null'(es. Kart Endurance 2015-04-25)

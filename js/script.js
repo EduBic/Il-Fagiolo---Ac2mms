@@ -1,6 +1,10 @@
-function scroll(){
+function scroll() {
 	document.getElementById('arcontent').scrollIntoView();
-};
+} ;
+
+function scrollCont() {
+	document.getElementById('container').scrollIntoView();
+} ;
 
 (function($){
 $(document).ready(function(){

@@ -75,7 +75,7 @@ END;
 
 /* HEADER HTML */
 
-function print_head($title){
+function print_head($title, $body ="no"){
 echo<<<END
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="it" lang="it">
@@ -87,10 +87,12 @@ echo<<<END
 END;
 	
 	echo "<link rel=\"stylesheet\" href=\"css/flexslider.css\" type=\"text/css\" media=\"screen\" />";
-
+	if($body=='si')
+		echo "<script src=\"./js/script.js\"></script>";
 	
 	echo "<title>$title</title></head>";
-
+	if($body=="si")
+		echo "<body onload=\"scrollCont()\">";
 }
 
 function print_header(){
@@ -301,7 +303,7 @@ END;
 
 /* FOOTER HTML */
 
-function print_footer(){
+function print_footer($body ="no"){
         echo<<<END
         <div id="footer">
 		<div class="right">
@@ -320,6 +322,8 @@ function print_footer(){
 		</div>
 	</div>
 END;
+	if($body=="si")
+		echo "</body>";
 }
 
 
