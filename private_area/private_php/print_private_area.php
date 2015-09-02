@@ -451,7 +451,12 @@ function print_form_setPartecipazione($conn,$event){  //GRAFICA HTML
 				</tbody>
 			</table>";
 	
-	$query="SELECT id,nome,cognome,dataNascita FROM persona JOIN aderente ON Id=Persona WHERE anno=YEAR(CURDATE())";
+	$query="SELECT id,nome,cognome,dataNascita 
+				FROM persona JOIN aderente ON Id=Persona 
+				WHERE anno=YEAR(CURDATE()) AND id NOT IN (SELECT PE.id 
+																		FROM persona AS PE JOIN aderente AS A ON PE.id=A.persona 
+																		JOIN partecipazione AS P ON A.persona=P.persona & A.anno=P.anno 
+																		JOIN istanzaevento AS I ON P.dataInizio=I.dataInizio & P.evento=I.evento)";
 	echo "<p class=\"query\">".$query." *# QUERY INCOMPLETA #* </p>";
 	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
 
@@ -504,7 +509,7 @@ END;
 	
 	$query="SELECT p.id, p.nome, p.cognome, p.dataNascita
 			FROM persona AS p JOIN aderente AS a ON p.id=a.persona
-			WHERE a.ruolo='AR' OR a.ruolo='AN';";
+			WHERE a.ruolo='AR' OR a.ruolo='AN' AND a.anno=YEAR(CURDATE())";
 	
 	echo "<p class=\"query\">".$query."</p>";
 	
@@ -936,13 +941,14 @@ END;
 	if($risultato!=0){
 		$tappa=mysql_fetch_array($risultato);
 		
-	$queryNumAN="SELECT DISTINCT count(*) AS numeroAN
+	$queryNumAN="SELECT count(*) AS numeroAN
 					FROM aderente AS A JOIN appartenenza AS AP ON AP.aderentePersona=A.persona AND AP.aderenteAnno=A.anno
 					WHERE A.ruolo='AN' AND 
 							AP.tappaNumRif='".$tappa['numRiferimento']."' AND 
 							AP.tappaAnnoInizio='".($annata+13+$tappa['numRiferimento'])."' AND 
-							AP.tappaAnnoFine='".($annata+14+$tappa['numRiferimento'])."'";
-		echo "<p class=\"query\">".$queryNumAN." ATTENZIONE: confusione tra group by e count(*)</p>";
+							AP.tappaAnnoFine='".($annata+14+$tappa['numRiferimento'])."'
+							GROUP BY A.persona, AP.tappaNumRif, AP.tappaAnnoInizio, AP.tappaAnnoFine";
+		echo "<p class=\"query\">".$queryNumAN."</p>";
 	
 	$queryNumAR="SELECT count(*) AS numeroAR
 					FROM aderente AS A JOIN appartenenza AS AP ON AP.aderentePersona=A.persona AND AP.aderenteAnno=A.anno
@@ -950,8 +956,8 @@ END;
 							AP.tappaNumRif='".$tappa['numRiferimento']."' AND 
 							AP.tappaAnnoInizio='".($annata+13+$tappa['numRiferimento'])."' AND 
 							AP.tappaAnnoFine='".($annata+14+$tappa['numRiferimento'])."'
-					GROUP BY P.id";
-		echo "<p class=\"query\">".$queryNumAR." ATTENZIONE: confusione tra group by e count(*)</p>";
+					GROUP BY A.persona, AP.tappaNumRif, AP.tappaAnnoInizio, AP.tappaAnnoFine";
+		echo "<p class=\"query\">".$queryNumAR."</p>";
 		
 		$risultato2=mysql_query($queryNumAN,$conn) or die("Ops".mysql_error());
 		$risultato3=mysql_query($queryNumAR,$conn) or die("Ops".mysql_error());
@@ -1276,8 +1282,9 @@ END;
 	//Numero aderenti annuali
 	$query="SELECT count(*) AS numAderenti, ruolo, anno
 				FROM aderente
-				GROUP BY ruolo, anno";
-	echo "<p class=\"query\">".$query." ATTENZIONE: query ERRATA</p>";
+				GROUP BY ruolo, anno
+				ORDER BY anno DESC, ruolo DESC";
+	echo "<p class=\"query\">".$query."</p>";
 	$numAderenti=mysql_query($query,$conn) or die('Ops'.mysql_error());
 	
 	echo "<h1>Andamento aderenti negli anni</h1>";
@@ -1287,22 +1294,20 @@ END;
 		echo "<table>
 					<thead>
 						<th>Anno</th>
-						<th>N° aderenti AR</th>
-						<th>N° aderenti AN</th>
-						<th>N° aderenti GE</th>
-						<th>N° aderenti TOT</th>
+						<th>Ruolo</th>
+						<th>Numero aderenti</th>
+						<!--<th>Numero aderenti tot</th>-->
 					</thead>
 					<tbody>";
 		
 		while($numAderentiAnno=mysql_fetch_array($numAderenti)){
 			echo "<tr>
 						<td>".$numAderentiAnno['anno']."</td>
+						<td>".$numAderentiAnno['ruolo']."</td>
 						<td>".$numAderentiAnno['numAderenti']."</td>
-						<td>".$numAderentiAnno['numAderenti']."</td>
-						<td>".$numAderentiAnno['numAderenti']."</td>
-						<td> N.D. </td>
 					</tr>";
 		}
+		
 		echo "</tbody></table>";
 	}
 	else echo "<h2>Nessun aderente trovato</h2>";
@@ -1313,8 +1318,9 @@ END;
 							JOIN appartenenza AS AP ON AP.aderentePersona=A.persona AND AP.aderenteAnno=A.anno
 							JOIN tappa AS T ON T.annoInizio=AP.tappaAnnoInizio AND T.annoFine=AP.tappaAnnoFine AND T.numRiferimento=AP.tappaNumRif
 					WHERE A.ruolo='AN'
-				GROUP BY T.annoInizio, T.annoFine, T.numRiferimento";
-	echo "<p class=\"query\">".$query." ATTENZIONE: query insoddisfacente, per avere il risultato desiderato serve un altro metodo</p>";
+				GROUP BY T.annoInizio, T.annoFine, T.numRiferimento
+				ORDER BY T.annoInizio DESC, T.annoFine DESC";
+	echo "<p class=\"query\">".$query."</p>";
 	$numMembri=mysql_query($query,$conn) or die('Ops'.mysql_error());
 	
 	echo "<h1>Andamento N° componenti tappe negli anni</h1>";
