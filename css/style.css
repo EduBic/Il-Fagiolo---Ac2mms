@@ -350,12 +350,13 @@ textarea{
     background: rgb(102, 0, 204) none repeat scroll 0% 0%;
     font-size: 12px;
     color: #FFF;
-    padding: 6px 14px;
+    padding: 7px 15px;
     border: 1px solid yellow;
     text-decoration: none;
     text-transform: uppercase;
     font-weight: bold;
-    margin-left: 148px;
+    margin-left: 20px;
+	 margin-right: 80px;
 }
 
 #form h1{

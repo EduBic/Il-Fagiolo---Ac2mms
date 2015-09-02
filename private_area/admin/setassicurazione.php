@@ -5,8 +5,9 @@ require_file();
 
 $conn=connection_db();
 
-$user="Admin";
+session_control();
 
+$user="Admin";
 print_arHeader($user);
 print_arMenu($user);
 

@@ -24,7 +24,7 @@
 }
 
 #arcontent{
-        min-height: 565px;
+        min-height: 593px;
 	margin: 0;
 	padding: 4%;
 	width: 72%;
@@ -56,6 +56,12 @@ span.risultato{
 
 
 /*CONTENUTO DI arcontent*/
+
+dt.info{
+	font-size: 1.2em;
+	text-decoration: underline;
+}
+
 table{
     text-align:center;
     margin-left:auto; 
@@ -90,8 +96,7 @@ input.set_button{
 }
 
 p.buttons{
-    margin-left:auto; 
-    margin-right:auto;
+	 text-align: right;
 }
 
 select.selecttable {

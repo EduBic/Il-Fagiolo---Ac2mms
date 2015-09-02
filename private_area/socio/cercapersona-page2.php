@@ -4,9 +4,10 @@ if(isset($_GET["Cerca"])){
 	require_file();
 
 	$conn=connection_db();
+	
+	session_control();
 
 	$user="Socio";
-
 	print_arHeader($user);
 	print_arMenu($user);
 

@@ -102,37 +102,15 @@ function print_arContent($user){
 	echo<<<END
 	<body>
 	<div id="arcontent">
-			<h2>BENVENUTO NELL'AREA SOCI</h2>
-			<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-				Quisque molestie, nisl sed vulputate mollis, tortor velit facilisis mi, laoreet iaculis erat turpis id orci. 
-				Proin a semper lectus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-				Quisque molestie, nisl sed vulputate mollis, tortor velit facilisis mi, laoreet iaculis erat turpis id orci. 
-				Proin a semper lectus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-				Quisque molestie, nisl sed vulputate mollis, tortor velit facilisis mi, laoreet iaculis erat turpis id orci. 
-				Proin a semper lectus.</p>
-				Proin a semper lectus.</p>
-				Proin a semper lectus.</p>
-				Proin a semper lectus.</p>
-				Proin a semper lectus.</p>
-				Proin a semper lectus.</p>
-				Proin a semper lectus.</p>
-				Proin a semper lectus.</p>
-				Proin a semper lectus.</p>
-				Proin a semper lectus.</p>
-				Proin a semper lectus.</p>
-				Proin a semper lectus.</p>
-				Proin a semper lectus.</p>
-				Proin a semper lectus.</p>
-				Proin a semper lectus.</p>
-				Proin a semper lectus.</p>
-				Proin a semper lectus.</p>
+			<h2>AREA ADMIN</h2>
+			<p></p>
 	</div>
 END;
 	}
 	elseif($user=="Socio"){
 		echo<<<END
 	<div id="arcontent">
-		<h2>Benvenuto nell'area socio!</h2>
+		<h1>Benvenuto nell'area socio!</h1>
 		<p>Tramite il menu qui a fianco avrai a disposizione diversi servizi:</p>
 		<dl>
 			<dt class="info">Statistiche:</dt>
@@ -142,10 +120,10 @@ END;
 			<dd class="info">In cui avrai a disposizioni molteplici possibilità di interrogazioni alla base 
 			di dati per ricavare subito e in semplicità le informazioni di tuo interesse.</dd>
 			<dt class="info">Query Avanzate:</dt> 
-			<dd class="info">sezione con le query costruite solo ai fini didattici del progetto accompagnate 
+			<dd class="info">Sezione con le query costruite solo ai fini didattici del progetto accompagnate 
 			da descrizione testuale.<dd>
 			</dl>
-		<p>Buon lavoro!</p>
+		<h2>Buon lavoro!</h2>
 		
 		<div id="help">
 			<p>Se invece ti sembra di avver smarrito il sentiero, non preoccuparti, puoi tornare alla <a href="../../index.php">Home</a>, altrimenti puoi consultare la <a href="../../mappa.html">mappa del sito.</a></p>
@@ -170,7 +148,7 @@ function print_arfooter(){
 				<li><a href="../../index.php">Home</a></li>
 				<li><a href="../../chisiamo.html">Chi Siamo</a></li>
 				<li><a href="../../cosafacciamo.php">Cosa Facciamo</a></li>
-				<li><a href="../../login-logout/logout.php">Logout</a></li>
+				<li><a href="../../php/logout.php">Logout</a></li>
 			</ul>
 		</div>
 	</div>
@@ -678,10 +656,10 @@ END;
 function print_form_deleteIstanza($conn){
 	
 	echo "<body onload=\"scroll()\"><div id=\"arcontent\">
-		<div id=\"path\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; cancella istanza evento ".date('Y')."</div>";
+		<div id=\"path\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; rimuovi eventi programmati</div>";
 	
 	$query="SELECT * FROM istanzaevento WHERE dataInizio>CURDATE()";
-	echo "<p class=\"query\">".$query." *#DA SISTEMARE LA CURDATE#*</p>";
+	echo "<p class=\"query\">".$query." *# CURDATE() ??? Sicuro?#*</p>";
 	
 	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
 	
@@ -691,7 +669,8 @@ function print_form_deleteIstanza($conn){
                 }
         else{
 	
-	echo "<form id=\"deleteistanza\" action=\"../private_php/deleteistanza.php\" method=\"get\">
+	echo "<h1>Rimuovi eventi programmati</h1>
+		<form id=\"deleteistanza\" action=\"../private_php/deleteistanza.php\" method=\"get\">
 	        <!--
 	           form dove vengno mostrati tutti le istanze d'evento dell'anno in corso da cui è possibile eliminarle
 		    -->
@@ -817,7 +796,7 @@ function print_form_selectIstanza($conn,$action,$path,$where){
                 echo "<h2>Nessun evento di quest'anno trovato</h2>";
                 }
         else{
-			  		echo "<h1>Assegna partecipanti eventi ".date('Y')." (questo titolo non va bene per tutti :D)</h1>";
+			  		echo "<h1>".$path." eventi ".date('Y')."</h1>";
 			  		 echo "<fieldset><legend>Seleziona l'evento da modificare</legend>
 			<!--
 				Prelevo i nomi e le dateInizio degli eventi in istanzaevento che hanno il campo tema='null'(es. Kart Endurance 2015-04-25)

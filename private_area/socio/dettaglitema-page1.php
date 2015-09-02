@@ -5,8 +5,9 @@ require_file();
 
 $conn=connection_db();
 
-$user="Socio";
+session_control();
 
+$user="Socio";
 print_arHeader($user);
 print_arMenu($user);
 
