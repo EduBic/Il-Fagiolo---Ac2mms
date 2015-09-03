@@ -10,11 +10,11 @@
 }
 
 #arheader h1{
-        text-align: center;
-        font-size: 3em;
-        font-weight: bold;
-        color: #FFF;
-        font-variant: small-caps;
+   text-align: center;
+   font-size: 3em;
+   font-weight: bold;
+   color: #FFF;
+   font-variant: small-caps;
 	margin: 0;
 	max-width: 70%;
 	padding: 0.5%;
@@ -24,7 +24,7 @@
 }
 
 #arcontent{
-        min-height: 593px;
+   min-height: 635px;
 	margin: 0;
 	padding: 4%;
 	width: 72%;
@@ -97,6 +97,10 @@ input.set_button{
 
 p.buttons{
 	 text-align: right;
+}
+
+p.instruction{
+	margin: 0;
 }
 
 select.selecttable {

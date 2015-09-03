@@ -63,6 +63,7 @@ function print_arMenu($user){
       <ul>
 	<li><a href="./deleteistanza-page.php">Istanza Evento</a></li>
 	<li><a href="./deletepartecipazione-page.php">Partecipanti Evento</a></li>
+	<li><a href="./deleteassicurazione.php">Assicurazione</a></li>
       </ul>
    </li>
 </ul>
@@ -618,10 +619,11 @@ END;
         else{
 			  	echo "<h1>Assicura aderenti ".date('Y')."</h1>";
 					 echo "
-				<form id=\"aderente\" action=\".././private_php/getassicurato.php\" method=\"get\">
+				<form id=\"assicura\" action=\".././private_php/getassicurato.php\" method=\"get\">
 	        <!--
 	            Si raccolgono tutte le persone salvate nel database.
-	            Si costruisce cosi' una tabella a video che rende disponibile la funzione di impostare il ruolo della persona e iscriverla in aderente.
+	            Si costruisce cosi' una tabella a video che rende disponibile la funzione di impostare l'assicurazione 
+					'si' della persona.
 	            L'azione e' consideranta nell'anno in corso.
 			-->
 				<fieldset>
@@ -775,6 +777,21 @@ function print_form_deletePartecipazione($conn, $event){
         echo "<input class=\"button\" type=\"submit\" name=\"Invio\" value=\"Invio\"/></p></fieldset></form>";
         }
     echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p></div>";	
+	echo "</div>";
+}
+
+function print_form_deleteAssicurazione(){
+	echo "<body onload=\"scroll()\">
+		<div id=\"arcontent\">
+			<div id=\"path\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; Cancella assicurazione</div>";
+	echo "<h1>Cancella assicurazione</h1>";
+	echo "<form id=\"resetass\ action=\"#\" method=\"get\"><fieldset>
+				<legend>Cancella assicurazione</legend>
+				<p class=\"instruction\">Imposta l'assicurazione a 'no' a tutte le persone presenti nel database</p>
+				<p>(ATTENZIONE: l'azione sarà irreversibile)
+				<input class=\"button\" type=\"submit\" name=\"reset\" value=\"reset\"></p>
+			</fieldset></form>";
+        
 	echo "</div>";
 }
 
