@@ -1268,18 +1268,30 @@ END;
 	echo "</div>";
 }
 
+function print_ruoli($ruolo){
+	if($ruolo=='GE')
+		return "Genitore";
+	elseif($ruolo=='AR')
+		return "Animatore";
+	elseif($ruolo=='AN')
+		return "Animato";
+}
+
 function print_statAderenti($conn){
 			echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Cerca Persona</div>
+	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Statistiche aderenti</div>
 END;
 	
-	//Numero aderenti annuali
-	$query="SELECT count(*) AS numAderenti, ruolo, anno
-				FROM aderente
-				GROUP BY ruolo, anno
-				ORDER BY anno DESC, ruolo DESC";
+	echo "
+	<p class='info'>Qui hai a disposizione tutte le informazioni più rilevanti per un'analisi sull'andamento degli aderenti all'associazione</p>";
+	
+	//Numero aderenti totali annuali
+	/*$query="SELECT COUNT(anno) AS nAderenti, anno
+					FROM aderente
+					GROUP BY anno
+					ORDER BY anno DESC";
 	echo "<p class=\"query\">".$query."</p>";
 	$numAderenti=mysql_query($query,$conn) or die('Ops'.mysql_error());
 	
@@ -1288,6 +1300,107 @@ END;
 	if($num_rows!=0){
 		
 		echo "<table>
+					<thead>
+						<th>Anno</th>
+						<th>Aderenti totali</th>
+					</thead>
+					<tbody>";
+		
+		while($numAderentiAnno=mysql_fetch_array($numAderenti)){
+			echo "<tr>
+						<td>".$numAderentiAnno['anno']."</td>
+						<td>".$numAderentiAnno['nAderenti']."</td>
+					</tr>";
+		}
+		
+		echo "</tbody></table>";
+	}
+	else echo "<h2>Nessun aderente trovato</h2>";*/
+	
+	$query="SELECT COUNT(anno) AS nAderenti, anno
+					FROM aderente
+					GROUP BY anno
+					ORDER BY anno DESC";
+	echo "<p class=\"query\">".$query."</p>";
+	$numAderenti=mysql_query($query,$conn) or die('Ops'.mysql_error());
+	
+	echo "<h1>Andamento aderenti negli anni</h1>";
+	$num_rows_ade=mysql_num_rows($numAderenti);
+	$Alength=0;
+	if($num_rows_ade!=0){
+		while($numAderentiAnno=mysql_fetch_array($numAderenti)){
+			$totAderenti[$Alength]=$numAderentiAnno['nAderenti'];
+			$Alength++;
+		}	
+	}
+	
+	//Numero aderenti annuali per ruolo
+	$query="SELECT count(*) AS numAderenti, ruolo, anno
+				FROM aderente
+				GROUP BY ruolo, anno
+				ORDER BY anno DESC, ruolo DESC";
+	echo "<p class=\"query\">".$query."</p>";
+	$numAderenti=mysql_query($query,$conn) or die('Ops'.mysql_error());
+	
+	$num_rows=mysql_num_rows($numAderenti);
+	if($num_rows!=0){
+		
+		$length=0;
+			while($row=mysql_fetch_array($numAderenti)){
+				$array[$length]=$row;
+				$length++;
+			}
+		
+		echo "<table>
+					<thead>
+						<th>Anno</th>
+						<th>Animati</th>
+						<th>Animatori</th>
+						<th>Genitori</th>
+						<th>Numero aderenti totali</th>
+					</thead>
+					<tbody>";
+		
+		$y=0;
+		$a=0;
+		while($y<$length){
+			
+			echo "<tr>
+						<td>".$array[$y]['anno']."</td>";
+			
+			$anno=$array[$y]['anno'];
+			$cont=0;
+			$animati=false; $animatori=false; $genitori=false;
+			while($y<$length && $array[$y]['anno']==$anno){
+				if($array[$y]['ruolo']=='AN' && $cont==0){
+					echo "<td>".$array[$y]['numAderenti']."</td>";
+					$animati=true;
+					$y++;
+				}
+				elseif($array[$y]['ruolo']=='AR' && $cont==1){
+					echo "<td>".$array[$y]['numAderenti']."</td>";
+					$animatori=true;
+					$y++;
+				}
+				elseif($array[$y]['ruolo']=='GE' && $cont==2){
+					echo "<td>".$array[$y]['numAderenti']."</td>";
+					$genitori=true;
+					$y++;
+				}
+				else
+					echo "<td> 0 </td>";
+				$cont++; //è inutile l'$anno blocca qualsiasi stampa successiva.
+			}
+			if($cont==2 && $y>=$length)
+				echo "<td> 0 </td>";
+			echo "<td>".$totAderenti[$a]."</td>";
+			echo "</tr>";
+			$a++;
+		}
+		echo "</tbody></table>";
+		
+		
+		/*echo "<table>
 					<thead>
 						<th>Anno</th>
 						<th>Ruolo</th>
@@ -1299,12 +1412,11 @@ END;
 		while($numAderentiAnno=mysql_fetch_array($numAderenti)){
 			echo "<tr>
 						<td>".$numAderentiAnno['anno']."</td>
-						<td>".$numAderentiAnno['ruolo']."</td>
+						<td>".print_ruoli($numAderentiAnno['ruolo'])."</td>
 						<td>".$numAderentiAnno['numAderenti']."</td>
 					</tr>";
 		}
-		
-		echo "</tbody></table>";
+		echo "</tbody></table>";*/
 	}
 	else echo "<h2>Nessun aderente trovato</h2>";
 	
@@ -1343,6 +1455,117 @@ END;
 						</table>";
 	}
 	else echo "<h2>Nessun aderente trovato</h2>";
+	
+	
+	echo "</div>";
+}
+
+function print_statEventi($conn){
+	echo<<<END
+	<body onload="scroll()">
+	<div id="arcontent">
+	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Statistiche eventi</div>
+END;
+	
+	//Numero partecipazioni istanze annuali
+	$query="SELECT count(A.persona) AS numParte, A.anno
+				FROM aderente AS A JOIN partecipazione AS P ON A.persona=P.persona AND A.anno=P.anno
+				GROUP BY A.persona,A.anno
+				";
+	echo "<p class=\"query\">".$query."</p>";
+	$numPart=mysql_query($query,$conn) or die('Ops'.mysql_error());
+	
+	echo "<h1>Andamento partecipazione negli anni</h1>";
+	$num_rows=mysql_num_rows($numPart);
+	if($num_rows!=0){
+		
+		echo "<table>
+					<thead>
+						<th>Anno</th>
+						<th>Numero partecipazioni</th>
+					</thead>
+					<tbody>";
+		
+		while($numPartAnno=mysql_fetch_array($numPart)){
+			echo "<tr>
+						<td>".$numPartAnno['anno']."</td>
+						<td>".$numPartAnno['numParte']."</td>
+					</tr>";
+		}
+		
+		echo "</tbody></table>";
+	}
+	else echo "<h2>Nessuna partecipazione trovata</h2>";
+	
+	//Media partecipanti agli eventi
+	$query="SELECT I.evento, E.stagione, CEIL(AVG(I.nPartecipanti)) mediaPartecipanti
+				FROM evento AS E JOIN istanzaevento AS I ON E.nome=I.evento
+				GROUP BY I.evento";
+	echo "<p class=\"query\">".$query."</p>";
+	$numMembri=mysql_query($query,$conn) or die('Ops'.mysql_error());
+	
+	echo "<h1>Media partecipanti negli anni</h1>";
+	$num_rows=mysql_num_rows($numMembri);
+	if($num_rows!=0){
+						echo "<table>
+							<thead>
+								<th>Evento</th>
+								<th>Periodo</th>
+								<th>Media partecipanti</th>
+							</thead>
+							<tbody>";
+		while($numM=mysql_fetch_array($numMembri)){
+				//echo "<h2>Anno <span class=\"risultato\">".$numMembriAnno['annoInizio']." - ".$numMembriAnno['annoFine']."</span></h2>";
+					echo "		<tr>
+										<td>".$numM['evento']."</td>
+										<td>".$numM['stagione']."</td>
+										<td>".$numM['mediaPartecipanti']."</td>
+									</tr>";
+		}
+				echo "	</tbody>
+						</table>";
+	}
+	else echo "<h2>Nessun evento trovato</h2>";
+	
+	//Affluenza agli eventi
+	$query="SELECT evento, dataInizio, nPartecipanti/nAderenti*100 AS affluenza
+					FROM
+					(SELECT evento, nPartecipanti, dataInizio, YEAR(dataInizio) AS data
+					FROM istanzaevento ) AS I
+								
+				JOIN 
+
+					(SELECT COUNT(anno) AS nAderenti, anno
+					FROM aderente
+					GROUP BY anno) AS A
+				
+				ON I.data=A.anno
+				ORDER BY anno DESC";
+	
+	echo "<p class=\"query\">".$query."</p>";
+	$numPart=mysql_query($query,$conn) or die('Ops'.mysql_error());
+	
+	echo "<h1>Affluenza eventi</h1>";
+	$num_rows=mysql_num_rows($numPart);
+	if($num_rows!=0){
+						echo "<table>
+							<thead>
+								<th>Evento</th>
+								<th>Data Inizio</th>
+								<th>Affluenza (%)</th>
+							</thead>
+							<tbody>";
+		while($numM=mysql_fetch_array($numPart)){
+					echo "		<tr>
+										<td>".$numM['evento']."</td>
+										<td>".$numM['dataInizio']."</td>
+										<td>".round($numM['affluenza'],2)."</td>
+									</tr>";
+		}
+				echo "	</tbody>
+						</table>";
+	}
+	else echo "<h2>Nessun evento trovato</h2>";
 	
 	
 	echo "</div>";

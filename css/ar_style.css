@@ -54,6 +54,10 @@ span.risultato{
 	text-decoration: underline;
 }
 
+span.bold{
+	font-weight: bold;
+}
+
 
 /*CONTENUTO DI arcontent*/
 
@@ -101,6 +105,11 @@ p.buttons{
 
 p.instruction{
 	margin: 0;
+}
+
+p.info{
+	padding: 0.7em;
+	border: 1px dashed #ABABAB;
 }
 
 select.selecttable {
