@@ -5,6 +5,10 @@ function require_file(){
 	require("../../php/print.php");
 }
 
+function format_data($anno,$mese,$giorno){
+	return $anno."-".$mese."-".$giorno;
+}
+
 function print_arHeader($user){
 echo<<<END
 	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="it" lang="it">
@@ -91,7 +95,7 @@ END;
 			<li><a href="./dettaglitema-page1.php">Dettagli Tema</a></li>
    	</ul>
    </li>
-   <li><a href='#'>Query Avanzate</a></li>
+   <li><a href='./queryavanzate.php'>Query Avanzate</a></li>
 </ul>
 </div>
 END;
@@ -163,73 +167,104 @@ END;
 /*AREA ADMIN*/
 
 /*Aggiungi*/
-function print_form_addPersona(){
+function print_form_addPersona($info,$successo){
 	echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	        <div id=\"path\">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Aggiungi Persona</div>
-		<form id="persona" class="form" action="#" method="get">
+	        <div id="arpath">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Aggiungi Persona</div>
+		<h2>Aggiungi nuova persona</h2>
+END;
+	
+	if($successo)
+		echo "<h3><span class='".$successo."'>".$info."</span></h3>";
+	
+	echo<<<END
+		<form id="persona" class="form" action="./addpersona.php" method="get">
 		    <!--
 	            Form che raccoglie i dati principali per eseguire una insert in 'persona'.
 	            La funzione php dovra' occuparsi anche dei controlli sui dati inseriti.
 			-->
 			<fieldset>
 				<legend>Inserisci i dati personali</legend>
-				<p><label for="nome">Nome</label>
+				<p><label for="nome">Nome*</label>
 				<input class="text" type="text" name="nome"></input></p>
-				<p><label for="cognome">Cognome</label>
+				<p><label for="cognome">Cognome*</label>
 				<input class="text" type="text" name="cognome"></input></p>
-				<p><label for="sesso">Sesso</label>
+				<p><label for="sesso">Sesso*</label>
 				<select class="select" name="sesso">
 					<option>M</option>
 					<option>F</option>
 				</select></p>
-				<p><label>Data di nascita</label>
-				<input class="data" type="text" name="gg"/>
-				<input class="data" type="text" name="mm"/>
-				<input class="data" type="text" name="yy"/></p>
-				<p><label for="luogoN">Luogo di nascita</label>
+				<p>
+					<label>Data di nascita*</label>
+					Giorno:
+					<input class="data" type="text" name="gg"/>
+					Mese:
+					<input class="data" type="text" name="mm"/>
+					Anno:
+					<input class="data" type="text" name="yy"/>
+				</p>	
+				<p><label for="luogoN">Luogo di nascita*</label>
 				<input class="text" type="text" name="luogoN"></input></p>
+				
 				<p><label for="telefono">Telefono</label>
 				<input class="text" type="text" name="telefono"></input></p>
+				
 				<p><label for="email">Email</label>
 				<input class="text" type="text" name="email"></input></p>
+				
 				<p><label for="parrocchia">Parrocchia</label>
 				<input class="text" type="text" name="parrocchia"></input></p>
-				<p><input class="button" type="submit" value="Invio"/></p>
+				
+				<p>Nota: i campi contrassegnati da * sono obbligatori<input class="button" type="submit" name="Inserisci" value="Inserisci"/></p>
 			</fieldset>
-
 		</form>
 		</div>
 END;
 }
 
-function print_form_addTappa(){
+function print_form_addTappa($info,$successo){
 	echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	<div id=\"path\">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Aggiungi Annata</div>
+	<div id="arpath">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Aggiungi Annata</div>
                 <form id="tappa" action="#" method="get">
 			<!--
 				Inserisco semplicemente una data maggiore di CURDATE() (!) e dando l'invio una procedura creera' il percorso completo della nuova tapppa
 			-->
+			<h2>Aggiungi nuova data</h2>
+END;
+	
+	if($successo)
+		echo "<h3><span class='".$successo."'>".$info." </span></h3>";
+	
+	echo"		
 			<fieldset>
 				<legend>Inserisci la nuova annata</legend>
 				<p>
-				    <label>Annata</label>
-				    <input class="text" type="text" name="annata"/>
+				    <label>Annata*</label>
+				    <input class=\"text\" type=\"text\" name=\"annata\" minlength=\"4\" maxlength=\"4\"/>
+				</p>
+				<p>Nota: i campi contrassegnati da * sono obbligatori
+					 <input class=\"button\" type=\"submit\" name=\"Inserisci\" value=\"Inserisci\"/>
 				</p>
 			</fieldset>
 		</form>
-	</div>
-END;
+	</div>";
 }
 
-function print_form_addIstanza(){
+function print_form_addIstanza($conn,$info,$successo){
 	echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	<div id=\"path\">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Aggiungi Istanza Evento</div>
+	<div id="arpath">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Aggiungi Istanza Evento</div>
+		<h2>Aggiungi una nuova istanza evento</h2>
+END;
+	
+	if($successo)
+		echo "<h3><span class='".$successo."'>".$info."</span></h3>";
+	
+	echo<<<END
 		<form id="istanza" class="form" action="#" method="get">
 		    <!--
 	            Scelto un evento dalla lista, creata raccogliendo il nome nella tabella 'evento', la funzione crea una nuova istanza di quell'evento
@@ -238,92 +273,127 @@ function print_form_addIstanza(){
 	            La funzione dovra' provvedere a eseguire i controlli nei dati inseriti, soprattutto nella data.
 			-->
 			<fieldset>
-				<legend>Aggiungi un evento "\$anno"</legend>
-				<p><label>Data inizio: </label>
-				<input class="data" type="text" name="gg"/>
-				<input class="data" type="text" name="mm"/>
-				<input class="data" type="text" name="yy"/>
+END;
+		echo	"<legend>Aggiungi un evento ".DATE('Y')."</legend>";
+						
+			$query=" SELECT nome FROM evento";
+        	echo "<p class=\"query\">".$query."</p>";
+
+        	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
+
+			echo	"<p><label>Evento* </label><select name='evento' class='tema'>";
+			while($row=mysql_fetch_array($risultato)){
+				echo "<option>".$row['nome']."</option>";
+			}
+			echo "</select></p>";
+
+echo<<<END
+				<p><label>Data inizio* </label>
+					Giorno:
+					<input class="data" type="text" name="ggi"/>
+					Mese:
+					<input class="data" type="text" name="mmi"/>
+					Anno:
+					<input class="data" type="text" name="yyi" value="2015" readonly="readonly"  minlegth="4" maxlength="4"/>
 				</p>
-				<p><label>Data fine: </label>
-				<input class="data" type="text" name="gg"/>
-				<input class="data" type="text" name="mm"/>
-				<input class="data" type="text" name="yy"/>
+				<p><label>Data fine* </label>
+					Giorno:
+					<input class="data" type="text" name="ggf"/>
+					Mese:
+					<input class="data" type="text" name="mmf"/>
+					Anno:
+					<input class="data" type="text" name="yyf" value="2015" minlegth="4" maxlength="4"/>
 				</p>
-				<p><label>Luogo:</label>
-				<input class="text" type="text" name="luogo"/>
+				<p><label>Luogo</label>
+				<input class="text" type="text" name="luogo" maxlength="40"/>
 				</p>
-				<p><label>Programma:</label>
-				<textarea name="programma" class="text"></textarea>
+				<p><label>Programma</label>
+				<textarea name="programma" class="text" maxlength="1000"></textarea>
 				</p>
-				<p><label>Quota  €:</label>
-				<input class="text" type="text" name="quota"/>
-				</p>
-				<p><label>Spesa  €:</label>
-				<input class="text" type="text" name="spesa"/>
-				</p>
-				<p><label>Tema: </label>
-				<select>  <!-- for each -->
-					<option>Nessuno</option>
-					<option>Coraggio</option>
-					<option>Alla ricerca di sé</option>
-					<!-- option presi da table TEMI tramite script php -->
-				</select>
-				</p>
-				<p><input class="button" type="submit" value="Invio"/></p>
+END;
+	
+		$query=" SELECT nome FROM tema";
+		echo "<p class=\"query\">".$query."</p>";
+
+        $risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
+
+			echo	"<p><label>Tema* </label><select name='tema' class='tema'>";
+			while($row=mysql_fetch_array($risultato)){
+			echo "<option>".$row['nome']."</option>";
+			}
+			echo "</select></p>";
+				
+				
+		echo	"<p>Nota: i campi contrassegnati da * sono obbligatori
+					<input class=\"button\" type=\"submit\" value=\"Inserisci\" name=\"Inserisci\"/></p>
 			</fieldset>
 		</form>
-	</div>
-END;
+	</div>";
 }
 
-function print_form_addTema(){
+function print_form_addTema($info,$successo){
 	echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	<div id=\"path\">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Aggiungi Tema</div>
-		<form id="tema" class="form" action="#" method="get">
+	<div id="arpath">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Aggiungi Tema</div>
+	<h2>Aggiungi nuovo tema</h2>
+END;
+	
+	if($successo)
+		echo "<h3><span class='".$successo."'>".$info."</span></h3>";
+	
+	echo<<<END
+		<form id="tema" class="form" action="./addtema.php" method="get">
 		    <!--
 	            Semplicemente aggiunge alla tabella 'tema' un nuovo tema.
 			-->
 			<fieldset>
 				<legend>Inserisci nuovo tema</legend>
-				<p><label>Nome: </label>
+				<p><label>Nome* </label>
 				<input class="text" type="text" name="nome"/>
 				</p>
-				<p><label>Descrizione: </label>
+				<p><label>Descrizione </label>
 				<textarea name="descrizione" class="text"></textarea>
 				</p>
-				<p><input class="button" type="button" value="Invio"/></p>
+				<p>Nota: i campi contrassegnati da * sono obbligatori
+				<input class="button" type="submit" value="Inserisci" name="Inserisci"/></p>
 			</fieldset>
 		</form>
 	</div>
 END;
 }
 
-function print_form_addEvento(){
+function print_form_addEvento($info,$successo){
 	echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	<div id="path">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Aggiungi Evento Annuale</div>
+	<div id="arpath">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Aggiungi Evento Annuale</div>
+	<h2>Aggiungi nuovo evento annuale</h2>
+END;
+	
+	if($successo)
+		echo "<h3><span class='".$successo."'>".$info."</span></h3>";
+	
+	echo<<<END
 		<form id="evento" class="form" action="#" method="get">
 		    <!--
 	            Semplicemente si crea un nuovo evento a cadenza annuale tipico dell'associazione.
 			-->
 			<fieldset>
 				<legend>Aggiungi un evento annuale</legend>
-				<p><label>Nome evento: </label>
-				<input class="text" type="text" name="nome"/></p>
-				<p><label>Descrizione: </label>
-				<textarea class="text" name="descrizione" rows="5" cols="20"></textarea></p>
-				<p><label>Periodo: </label>
-					<select id="periodo" name="periodo">
+				<p><label>Nome* </label>
+				<input class="text" type="text" name="nome" maxlength="60"/></p>
+				<p><label>Descrizione </label>
+				<textarea class="text" name="descrizione" rows="5" cols="20" maxlength="1000"></textarea></p>
+				<p><label>Periodo* </label>
+					<select class="tema" id="stagione" name="stagione">
 					<option>inverno</option>
 					<option>primavera</option>
 					<option>estate</option>
 					<option>autunno</option>
 				</select></p>
-				<p>
-				<input class="button" type="submit" value="Invio"/></p>
+				<p>Nota: i campi contrassegnati da * sono obbligatori
+				<input class="button" type="submit" value="Inserisci" name="Inserisci"/></p>
 			</fieldset>
 		</form>
 	</div>
@@ -342,7 +412,7 @@ function print_form_setAderente($conn){
 	echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	<div id="path">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Assegna Aderenti dell'Anno</div>
+	<div id="arpath">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Assegna Aderenti dell'Anno</div>
 END;
 
         $query="select p.id,p.nome,p.cognome,p.dataNascita ";
@@ -409,7 +479,7 @@ END;
 function print_form_setPartecipazione($conn,$event){  //GRAFICA HTML
 		echo "<body onload=\"scroll()\">
 	<div id=\"arcontent\">
-		<div id=\"path\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; Assegna partecipanti</div>
+		<div id=\"arpath\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; Assegna partecipanti</div>
 	<!-- -->";
 	
 	echo "<h1>Evento selezionato:</h1>";
@@ -483,7 +553,7 @@ function print_form_setAppartenenza($conn){
 	echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	<div id="path">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Assegna Appartenenza</div>
+	<div id="arpath">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Assegna Appartenenza</div>
 END;
 	
 	$query="SELECT p.id, p.nome, p.cognome, p.dataNascita
@@ -547,7 +617,7 @@ function print_form_setTema($conn,$event){
 	echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	<div id="path">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Assegna Tema</div>
+	<div id="arpath">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Assegna Tema</div>
 	<!-- 		Prelevo i nomi e le dateInizio degli eventi in istanzaevento che hanno il campo tema='null'(es. Kart Endurance 2015-04-25)
 				Prelevo tutti i temi disponibili in tema e creo per ogni row la lista di temi
 				Infine costruisco il relativo pulsante univoco per ogni riga (!)
@@ -600,7 +670,7 @@ function print_form_setAssicurazione($conn){
 		echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	<div id="path">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Assegna assicurazione</div>
+	<div id="arpath">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Assegna assicurazione</div>
 END;
 
         $query="select p.id,p.nome,p.cognome,p.dataNascita
@@ -658,7 +728,7 @@ END;
 function print_form_deleteIstanza($conn){
 	
 	echo "<body onload=\"scroll()\"><div id=\"arcontent\">
-		<div id=\"path\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; rimuovi eventi programmati</div>";
+		<div id=\"arpath\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; rimuovi eventi programmati</div>";
 	
 	$query="SELECT * FROM istanzaevento WHERE dataInizio>CURDATE()";
 	echo "<p class=\"query\">".$query." *# CURDATE() ??? Sicuro?#*</p>";
@@ -708,7 +778,7 @@ function print_form_deleteIstanza($conn){
 function print_form_deletePartecipazione($conn, $event){
 	echo "<body onload=\"scroll()\">
 	<div id=\"arcontent\">
-		<div id=\"path\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; Cancella partecipazione</div>
+		<div id=\"arpath\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; Cancella partecipazione</div>
 	<!-- Mostra l'evento selezionato precedentemente e mostra i temi da assegnarli -->";
 	
 	echo "<h1>Evento selezionato:</h1>";
@@ -783,7 +853,7 @@ function print_form_deletePartecipazione($conn, $event){
 function print_form_deleteAssicurazione(){
 	echo "<body onload=\"scroll()\">
 		<div id=\"arcontent\">
-			<div id=\"path\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; Cancella assicurazione</div>";
+			<div id=\"arpath\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; Cancella assicurazione</div>";
 	echo "<h1>Cancella assicurazione</h1>";
 	echo "<form id=\"resetass\ action=\"#\" method=\"get\"><fieldset>
 				<legend>Cancella assicurazione</legend>
@@ -791,14 +861,18 @@ function print_form_deleteAssicurazione(){
 				<p>(ATTENZIONE: l'azione sarà irreversibile)
 				<input class=\"button\" type=\"submit\" name=\"reset\" value=\"reset\"></p>
 			</fieldset></form>";
-        
+	
+	/*
+	query="call procedure insurance_flag('no')";
+	mysql_query($query,$conn) or die( "Ops".mysql_error());
+   */ 
 	echo "</div>";
 }
 
 function print_form_selectIstanza($conn,$action,$path,$where){
 	echo "<body onload=\"scroll()\">
 	<div id=\"arcontent\">
-		<div id=\"path\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; ".$path."</div>";
+		<div id=\"arpath\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; ".$path."</div>";
 	
 	$query="SELECT *
 			 FROM istanzaevento
@@ -855,14 +929,6 @@ function print_form_selectIstanza($conn,$action,$path,$where){
 
 
 /*AREA SOCIO*/
-
-function print_formSocio(){
-	echo<<<END
-	<body onload="scroll()">
-	<div id="arcontent">
-	</div>
-END;
-}
 
 function print_form_selectTappa($conn){
 	echo "<body onload=\"scroll()\">
@@ -1052,6 +1118,7 @@ END;
 	else echo "<h2>Nessun animatore assegnato a questa tappa</h2>";
 		
 	}
+	echo "<p id=\"back-page-link\"><a href=\"./infotappa-page1.php\">Indietro</a></p>";
 	echo "</div>";
 }
 
@@ -1100,6 +1167,7 @@ END;
 	$desc=mysql_fetch_array($descrizione);
 	echo "<p> $desc[0] </p>";
 	
+	echo "<p id=\"back-page-link\"><a href=\"./dettaglitema-page1.php\">Indietro</a></p>";
 	echo "</div>";
 }
 
@@ -1199,10 +1267,10 @@ END;
 						</form>
 					</tr>";
 		}
-		echo "</tbody></table>";
+		echo "</tbody></table></fieldset>";
 	}
 
-	
+	echo "<p id=\"back-page-link\"><a href=\"./cercapersona-page1.php\">Indietro</a></p>";
 	echo "</div>";
 }
 
@@ -1263,8 +1331,8 @@ END;
 		echo "</tbody></table>";
 	}
 	else echo "<h2>Nessun aderenza negli anni</h2>";
-	
 
+	echo "<p id=\"back-page-link\"><a href=\"./cercapersona-page1.php\">Indietro</a></p>";
 	echo "</div>";
 }
 
@@ -1284,8 +1352,7 @@ function print_statAderenti($conn){
 	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Statistiche aderenti</div>
 END;
 	
-	echo "
-	<p class='info'>Qui hai a disposizione tutte le informazioni più rilevanti per un'analisi sull'andamento degli aderenti all'associazione</p>";
+	echo "<p class='info'>Qui hai a disposizione tutte le informazioni più rilevanti per un'analisi sull'andamento degli aderenti all'associazione.</p>";
 	
 	//Numero aderenti totali annuali
 	/*$query="SELECT COUNT(anno) AS nAderenti, anno
@@ -1362,7 +1429,7 @@ END;
 					<tbody>";
 		
 		$y=0;
-		$a=0;
+		$aTot=0;
 		while($y<$length){
 			
 			echo "<tr>
@@ -1389,13 +1456,13 @@ END;
 				}
 				else
 					echo "<td> 0 </td>";
-				$cont++; //è inutile l'$anno blocca qualsiasi stampa successiva.
+				$cont++;
 			}
 			if($cont==2 && $y>=$length)
 				echo "<td> 0 </td>";
-			echo "<td>".$totAderenti[$a]."</td>";
+			echo "<td>".$totAderenti[$aTot]."</td>";
 			echo "</tr>";
-			$a++;
+			$aTot++;
 		}
 		echo "</tbody></table>";
 		
@@ -1456,7 +1523,7 @@ END;
 	}
 	else echo "<h2>Nessun aderente trovato</h2>";
 	
-	
+	echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p>";
 	echo "</div>";
 }
 
@@ -1466,6 +1533,8 @@ function print_statEventi($conn){
 	<div id="arcontent">
 	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Statistiche eventi</div>
 END;
+	
+	echo "<p class='info'>Qui hai a disposizione tutte le informazioni più rilevanti per un'analisi sull'andamento della partecipazione agli eventi organizzati dall'associazione.</p>";
 	
 	//Numero partecipazioni istanze annuali
 	$query="SELECT count(A.persona) AS numParte, A.anno
@@ -1552,14 +1621,14 @@ END;
 							<thead>
 								<th>Evento</th>
 								<th>Data Inizio</th>
-								<th>Affluenza (%)</th>
+								<th>Affluenza</th>
 							</thead>
 							<tbody>";
 		while($numM=mysql_fetch_array($numPart)){
 					echo "		<tr>
 										<td>".$numM['evento']."</td>
 										<td>".$numM['dataInizio']."</td>
-										<td>".round($numM['affluenza'],2)."</td>
+										<td>".round($numM['affluenza'],2)." %</td>
 									</tr>";
 		}
 				echo "	</tbody>
@@ -1567,7 +1636,37 @@ END;
 	}
 	else echo "<h2>Nessun evento trovato</h2>";
 	
+	echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p>";
+	echo "</div>";
+}
+
+function print_queryAvanzate(){
+	echo<<<END
+	<body onload="scroll()">
+	<div id="arcontent">
+	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Query Avanzate</div>
+END;
 	
+	echo "<dl>
+				<dt>Query 1</dt>
+				<dd><p>SELECT evento, dataInizio, nPartecipanti/nAderenti*100 AS affluenza</p>
+					<p>FROM</p>
+					<p>(SELECT evento, nPartecipanti, dataInizio, YEAR(dataInizio) AS data</p>
+					<p>FROM istanzaevento ) AS I</p>
+								
+				<p>JOIN </p>
+
+					<p>(SELECT COUNT(anno) AS nAderenti, anno</p>
+					<p>FROM aderente</p>
+					<p>GROUP BY anno) AS A</p>
+				
+				<p>ON I.data=A.anno</p>
+				<p>ORDER BY anno DESC</p>
+				<p class=\"info\">Questa query...</p></dd>
+	
+	</dl>";
+	
+	echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p>";
 	echo "</div>";
 }
 

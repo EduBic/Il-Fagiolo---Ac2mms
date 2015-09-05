@@ -49,6 +49,10 @@ span.no{
 	color: red;
 }
 
+span.si{
+	color: green;
+}
+
 span.risultato{
 	font-style: italic;
 	text-decoration: underline;
@@ -112,8 +116,17 @@ p.info{
 	border: 1px dashed #ABABAB;
 }
 
+p#back-page-link{
+	padding: 1em;
+	text-align: left;
+}
+
 select.selecttable {
         width: 100%;
+}
+
+select.tema{
+	width: 290px;
 }
 
 #selectistanza{
@@ -126,6 +139,10 @@ tr.select-row{
 }
 
 input.checkbox{
+}
+
+input.text{
+	height: 35px;
 }
 
 
