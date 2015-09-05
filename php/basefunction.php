@@ -33,4 +33,8 @@ function connection_db_close($conn){
 	mysql_close($conn);
 }
 
+function format_data($anno,$mese,$giorno){
+	return $anno."-".$mese."-".$giorno;
+}
+
 ?>

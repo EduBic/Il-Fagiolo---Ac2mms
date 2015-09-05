@@ -5,10 +5,6 @@ function require_file(){
 	require("../../php/print.php");
 }
 
-function format_data($anno,$mese,$giorno){
-	return $anno."-".$mese."-".$giorno;
-}
-
 function print_arHeader($user){
 echo<<<END
 	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="it" lang="it">
@@ -175,7 +171,7 @@ function print_form_addPersona($info,$successo){
 		<h2>Aggiungi nuova persona</h2>
 END;
 	
-	if($successo)
+	if($info)
 		echo "<h3><span class='".$successo."'>".$info."</span></h3>";
 	
 	echo<<<END
@@ -232,10 +228,10 @@ function print_form_addTappa($info,$successo){
 			<!--
 				Inserisco semplicemente una data maggiore di CURDATE() (!) e dando l'invio una procedura creera' il percorso completo della nuova tapppa
 			-->
-			<h2>Aggiungi nuova data</h2>
+			<h2>Aggiungi nuova annata</h2>
 END;
 	
-	if($successo)
+	if($info)
 		echo "<h3><span class='".$successo."'>".$info." </span></h3>";
 	
 	echo"		
@@ -261,7 +257,7 @@ function print_form_addIstanza($conn,$info,$successo){
 		<h2>Aggiungi una nuova istanza evento</h2>
 END;
 	
-	if($successo)
+	if($info)
 		echo "<h3><span class='".$successo."'>".$info."</span></h3>";
 	
 	echo<<<END
@@ -339,7 +335,7 @@ function print_form_addTema($info,$successo){
 	<h2>Aggiungi nuovo tema</h2>
 END;
 	
-	if($successo)
+	if($info)
 		echo "<h3><span class='".$successo."'>".$info."</span></h3>";
 	
 	echo<<<END
@@ -371,7 +367,7 @@ function print_form_addEvento($info,$successo){
 	<h2>Aggiungi nuovo evento annuale</h2>
 END;
 	
-	if($successo)
+	if($info)
 		echo "<h3><span class='".$successo."'>".$info."</span></h3>";
 	
 	echo<<<END
@@ -437,7 +433,7 @@ END;
 	            L'azione e' consideranta nell'anno in corso.
 			-->
 				<fieldset>
-				<legend>Nuove iscrizioni</legend>
+				<legend>Nuove possibili iscrizioni</legend>
 				
 				<table>
 					<thead>
@@ -464,8 +460,6 @@ END;
         echo "	<td>
         				<input type=\"checkbox\" name=\"modifica[]\" value=\"".$row['id']."\">
 					</td>";
-		/*echo "<td><p class=\"radio\"><input class=\"radio\" type=\"radio\" name=\"iscrivi[]\" value=\"no\" checked=\"checked\"/><label class=\"lab\">No</label></p>";
-		echo "<p class=\"radio\"><input class=\"radio\" type=\"radio\" name=\"iscrivi[]\" value=\"" .$row['id']. "\"/><label class=\"lab\">Si</label></p></td>";*/
                 echo "</tr>"; //chiudo la row iniziata da print_table_rows
                 }
                 
@@ -799,13 +793,11 @@ function print_form_deletePartecipazione($conn, $event){
 				</tbody>
 			</table>";
 	
-	echo "<form id=\"deletepartecipazione\" action=\"../private_php/deletepartecipazione.php\" method=\"get\"><fieldset>";
-	echo "<legend>Seleziona il tema da assegnare</legend>";
 	
-	$query="	SELECT PE.nome, PE.cognome, PE.dataNascita
+	$query="	SELECT PE.id, PE.nome, PE.cognome, PE.dataNascita
 				FROM persona AS PE JOIN aderente AS A ON PE.id=A.persona
-				JOIN partecipazione AS P ON A.persona=P.persona & A.anno=P.anno 
-				JOIN istanzaevento AS I ON P.dataInizio=I.dataInizio & P.evento=I.evento";
+				JOIN partecipazione AS P ON A.persona=P.persona AND A.anno=P.anno 
+				WHERE P.evento='".$event['evento']."' AND P.dataInizio='".$event['dataInizio']."'";
 	
 	echo "<p class=\"query\">".$query."</p>";
 	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
@@ -844,28 +836,28 @@ function print_form_deletePartecipazione($conn, $event){
 		 	echo "<input type=\"hidden\" name=\"evento\" value=\"".$event['evento']."\">";
 			echo "<input type=\"hidden\" name=\"dataInizio\" value=\"".$event['dataInizio']."\">";
         echo "<p class=\"buttons\"><input class=\"button\" type=\"reset\" value=\"Reset\"/>";
-        echo "<input class=\"button\" type=\"submit\" name=\"Invio\" value=\"Invio\"/></p></fieldset></form>";
+        echo "<input class=\"button\" type=\"submit\" name=\"\" value=\"Modifica\"/></p></fieldset></form>";
         }
     echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p></div>";	
 	echo "</div>";
 }
 
-function print_form_deleteAssicurazione(){
+function print_form_deleteAssicurazione($info,$successo){
 	echo "<body onload=\"scroll()\">
 		<div id=\"arcontent\">
 			<div id=\"arpath\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; Cancella assicurazione</div>";
 	echo "<h1>Cancella assicurazione</h1>";
-	echo "<form id=\"resetass\ action=\"#\" method=\"get\"><fieldset>
+	
+	if($info){
+		echo "<h3><span class='".$successo."'>".$info."</span></h3>";	
+	}
+	
+	echo "<form id=\"resetass\ action=\"./deleteassicurazione.php\" method=\"get\"><fieldset>
 				<legend>Cancella assicurazione</legend>
 				<p class=\"instruction\">Imposta l'assicurazione a 'no' a tutte le persone presenti nel database</p>
 				<p>(ATTENZIONE: l'azione sarà irreversibile)
-				<input class=\"button\" type=\"submit\" name=\"reset\" value=\"reset\"></p>
+				<input class=\"button\" type=\"submit\" name=\"Reset\" value=\"reset\"></p>
 			</fieldset></form>";
-	
-	/*
-	query="call procedure insurance_flag('no')";
-	mysql_query($query,$conn) or die( "Ops".mysql_error());
-   */ 
 	echo "</div>";
 }
 
@@ -888,7 +880,7 @@ function print_form_selectIstanza($conn,$action,$path,$where){
                 }
         else{
 			  		echo "<h1>".$path." eventi ".date('Y')."</h1>";
-			  		 echo "<fieldset><legend>Seleziona l'evento da modificare</legend>
+			  		 echo "<fieldset><legend> l'evento da modificare</legend>
 			<!--
 				Prelevo i nomi e le dateInizio degli eventi in istanzaevento che hanno il campo tema='null'(es. Kart Endurance 2015-04-25)
 				Infine costruisco il relativo pulsante univoco per ogni riga per selezionare l'e vento interessato.
@@ -933,7 +925,7 @@ function print_form_selectIstanza($conn,$action,$path,$where){
 function print_form_selectTappa($conn){
 	echo "<body onload=\"scroll()\">
 	<div id=\"arcontent\">
-		<div id=\"path\">Ti trovi in: <a href=\"./areasocio.php\">Area riservata</a> &gt;&gt; Informazioni Tappa</div>";
+		<div id=\"arpath\">Ti trovi in: <a href=\"./areasocio.php\">Area riservata</a> &gt;&gt; Informazioni Tappa</div>";
 	
 	$query="SELECT *
 			 FROM tappa
@@ -987,7 +979,7 @@ function print_infoTappa($conn,$tappa){
 	echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Informazioni Tappa</div>
+	<div id="arpath">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Informazioni Tappa</div>
 	<!-- 		
 		Prelevo tutti i membri con relativi dati personali di una tappa in base all'annata del 1-2-3-4-5
 	-->
@@ -1126,7 +1118,7 @@ function print_form_dettagliTema($conn){
 	echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Descrizione Tema</div>
+	<div id="arpath">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Descrizione Tema</div>
 END;
 
 	
@@ -1152,7 +1144,7 @@ function print_destema($conn,$tema){
 	echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Descrizione Tema</div>
+	<div id="arpath">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Descrizione Tema</div>
 END;
 
 	$nome=$tema['nome'];
@@ -1174,7 +1166,7 @@ END;
 function print_progevento($conn,$evento){
 		echo "<body onload=\"scroll()\">
 	<div id=\"arcontent\">
-		<div id=\"path\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; Programma Evento</div>";
+		<div id=\"arpath\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; Programma Evento</div>";
 	
 	$nome=$evento['evento'];
 	$dataInizio=$evento['dataInizio'];
@@ -1204,7 +1196,7 @@ function print_form_cercaPersona($conn){
 	echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Cerca Persona</div>
+	<div id="arpath">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Cerca Persona</div>
 END;
 
 	//Ricerca per nome e/o cognome
@@ -1222,7 +1214,7 @@ function print_cercaPersona($conn,$ricerca){
 	echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Cerca Persona</div>
+	<div id="arpath">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Cerca Persona</div>
 END;
 	
 	$match=$ricerca['ricerca'];
@@ -1287,7 +1279,7 @@ function print_infoPersona($conn,$persona){
 		echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Cerca Persona</div>
+	<div id="arpath">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Cerca Persona</div>
 END;
 	
 	$id=$persona['id'];
@@ -1349,7 +1341,7 @@ function print_statAderenti($conn){
 			echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Statistiche aderenti</div>
+	<div id="arpath">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Statistiche aderenti</div>
 END;
 	
 	echo "<p class='info'>Qui hai a disposizione tutte le informazioni più rilevanti per un'analisi sull'andamento degli aderenti all'associazione.</p>";
@@ -1531,7 +1523,7 @@ function print_statEventi($conn){
 	echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Statistiche eventi</div>
+	<div id="arpath">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Statistiche eventi</div>
 END;
 	
 	echo "<p class='info'>Qui hai a disposizione tutte le informazioni più rilevanti per un'analisi sull'andamento della partecipazione agli eventi organizzati dall'associazione.</p>";
@@ -1644,7 +1636,7 @@ function print_queryAvanzate(){
 	echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
-	<div id="path">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Query Avanzate</div>
+	<div id="arpath">Ti trovi in: <a href="./areasocio.php">Area riservata</a> &gt;&gt; Query Avanzate</div>
 END;
 	
 	echo "<dl>

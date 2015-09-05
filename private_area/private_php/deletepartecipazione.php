@@ -2,10 +2,10 @@
 <?php //effettua la delete dei partecipanti dell'evento scelto selezionati tramite checkbox
 if(isset($_GET["Modifica"])){
 	$elimina=isset($_GET['elimina']) ? $_GET['elimina'] : array();
-		echo "<p>Partecipanti da rimuovere: ".count($aggiungi)."</p>
+		echo "<p>Partecipanti da rimuovere: ".count($elimina)."</p>
 				<p> all'evento: ".$_GET['evento']." con data: ".$_GET['dataInizio']."</p>";
 	
-	foreach($aggiungi as $id){
+	foreach($elimina as $id){
   		echo "<p>Id da rimuovere: ".$id;  
 	}
 	
