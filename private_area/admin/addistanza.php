@@ -13,20 +13,24 @@ if(isset($_GET["Inserisci"])){
 	//Verifiche integrità dati
 	if(!empty($_GET['ggi']) && !empty($_GET['mmi']) && !empty($_GET['ggf']) && !empty($_GET['mmf']) && !empty($_GET['yyf'])){
 		
-		if(checkdate($_GET['ggi'], $_GET['mmi'], $_GET['yyi']) && checkdate($_GET['ggf'], $_GET['mmf'], $_GET['yyf'])){
+		if(checkdate( $_GET['mmi'], $_GET['ggi'], $_GET['yyi']) && checkdate($_GET['mmf'], $_GET['ggf'], $_GET['yyf'])){
 			
 			$dataInizio=format_data($_GET['yyi'],$_GET['mmi'],$_GET['ggi']);
 			$dataFine=format_data($_GET['yyf'],$_GET['mmf'],$_GET['ggf']);
 			
-			$test=true;
-			//$query="INSERT INTO istanzaevento VLAUES (`$_GET['evento']`, `$dataInizio`, `$dataFine`, `$_GET['luogo']`,
-			//`$_GET['programma']`, `$_GET['tema']`)";
-			//mysql_query($query,$conn) or $test=false;
+				if($dataInizio<=$dataFine){
 			
-			if($test){
-				$info="Inserimento avvenuto con successo";
-				$successo='si';
-			}
+				$test=true;
+				$query="INSERT INTO istanzaevento VLAUES (".$_GET['evento'].", $dataInizio, $dataFine, ".$_GET['luogo'].", ".$_GET['programma'].", ".$_GET['tema'].")";
+				mysql_query($query,$conn) or $test=false;
+			
+					if($test){
+						$info="Inserimento avvenuto con successo";
+						$successo='si';
+					}
+				}
+			else
+				$info="La data di inizio deve essere minore della data di fine";
 		}
 		else
 			$info="I campi data non sono validi";

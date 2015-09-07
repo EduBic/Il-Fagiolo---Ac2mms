@@ -12,9 +12,8 @@ session_control_login();
 ?>
 <div id="form">
 				<h1>Accedi all'area riservata</h1>
-				<h2>(Servizio offerto ai soli soci)</h2>
-<?php 
-        
+				<h2>Inserisci login e password (Servizio offerto ai soli soci)</h2>
+<?php		
 	if(isset($_SESSION['redirect'])) //se $_SESSION['redirect'] non è settatta allora non si è stati ridiretti in login
 		{
 		if($_SESSION['redirect']=='true')  //$_SESSION['redirect']==true si è sbagliato la user/password
@@ -29,8 +28,14 @@ session_control_login();
 			}
 		unset($_SESSION['redirect']);
 		}
-	else
-	        echo "<p id=\"error-immission\">Inserisci login e password</p>";  
+	else{
+		if(isset($_SESSION['error'])){
+			echo "<p id=\"error-immission\">Login o password errate</p>";
+			session_destroy();	
+		}
+		//else		
+			//echo "<p id=\"query\">Inserisci login e password</p>";  
+	}
 ?>
 	<fieldset>
 	

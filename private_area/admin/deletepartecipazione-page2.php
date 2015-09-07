@@ -4,7 +4,6 @@ if(isset($_GET["Seleziona"])){
 	require_file();
 
 	$conn=connection_db();
-
 	session_control();
 
 	$user="Admin";
@@ -16,7 +15,5 @@ if(isset($_GET["Seleziona"])){
 	print_arfooter();
 	print_close();
 }
-else
-	echo "Ops";
 
 ?>

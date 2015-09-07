@@ -132,7 +132,7 @@ echo<<<END
 		<div id="menu">
 			<ul>
 				<li><a href="index.php">Home</a></li>
-				<li><a href="chisiamo.html">Chi Siamo</a></li>
+				<li><a href="chisiamo.php">Chi Siamo</a></li>
 				<li><a href="cosafacciamo.php">Cosa Facciamo</a></li>
 END;
 				session_start();
@@ -305,6 +305,7 @@ END;
 
 function print_footer($body ="no"){
         echo<<<END
+		  		 </div>
         <div id="footer">
 		<div class="right">
 		        <p>Il Fagiolo - Ac<sup>2</sup>mms <sup>&reg;</sup></p>

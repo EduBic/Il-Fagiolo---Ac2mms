@@ -50,22 +50,25 @@ function print_arMenu($user){
 	<li><a href="./addevento.php">Evento</a></li>
       </ul>
    </li>
+	
    <li class='active has-sub'><a href='#'>Assegna</a>
       <ul>
-        <li><a href="./setaderente.php">Iscrizione Aderente</a></li>
-	<li><a href="./setpartecipazione.php">Partecipazione</a></li>
-	<li><a href="./setappartenenza.php">Appartenenza</a></li>
-		<li><a href="./setassicurazione.php">Assicurazione</a></li>
-	<li><a href="./settema.php">Tema</a></li>
+        	<li><a href="./setaderente.php">Iscrizione Aderente</a></li>
+			<li><a href="./setpartecipazione.php">Partecipazione</a></li>
+			<li><a href="./setappartenenza.php">Appartenenza</a></li>
+			<li><a href="./setassicurazione.php">Assicurazione</a></li>
+			<li><a href="./settema.php">Tema</a></li>
       </ul>
    </li>
+	
    <li class='active has-sub'><a href='#'>Cancella</a>
       <ul>
-	<li><a href="./deleteistanza-page.php">Istanza Evento</a></li>
-	<li><a href="./deletepartecipazione-page.php">Partecipanti Evento</a></li>
-	<li><a href="./deleteassicurazione.php">Assicurazione</a></li>
+			<li><a href="./deleteistanza-page.php">Istanza Evento</a></li>
+			<li><a href="./deletepartecipazione-page.php">Partecipanti Evento</a></li>
+			<li><a href="./deleteassicurazione.php">Assicurazione</a></li>
       </ul>
    </li>
+	<li><a href='../../php/logout.php'>Logout</a></li>
 </ul>
 </div>
 
@@ -254,7 +257,7 @@ function print_form_addIstanza($conn,$info,$successo){
 	<body onload="scroll()">
 	<div id="arcontent">
 	<div id="arpath">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Aggiungi Istanza Evento</div>
-		<h2>Aggiungi una nuova istanza evento</h2>
+		<h2>Aggiungi nuova istanza evento</h2>
 END;
 	
 	if($info)
@@ -404,7 +407,7 @@ function print_table_rows($row){  //stampa le prime celle della riga ma non la c
 }
 
 /*Assegna*/
-function print_form_setAderente($conn){
+function print_form_setAderente($conn,$info){
 	echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
@@ -425,8 +428,10 @@ END;
                 }
         else{
 			  		echo "<h1>Nuove iscrizioni anno ".date('Y')."</h1>";
+			  if($info)
+			  		echo "<h3>".$info."</h3>";
 					 echo<<<END
-				<form id="aderente" action=".././private_php/getaderente.php" method="get">
+				<form id="aderente" action="./setaderente.php" method="get">
 	        <!--
 	            Si raccolgono tutte le persone salvate nel database.
 	            Si costruisce cosi' una tabella a video che rende disponibile la funzione di impostare il ruolo della persona e iscriverla in aderente.
@@ -498,9 +503,11 @@ function print_form_setPartecipazione($conn,$event){  //GRAFICA HTML
 				FROM persona JOIN aderente ON Id=Persona 
 				WHERE anno=YEAR(CURDATE()) AND id NOT IN (SELECT PE.id 
 																		FROM persona AS PE JOIN aderente AS A ON PE.id=A.persona 
-																		JOIN partecipazione AS P ON A.persona=P.persona & A.anno=P.anno 
-																		JOIN istanzaevento AS I ON P.dataInizio=I.dataInizio & P.evento=I.evento)";
-	echo "<p class=\"query\">".$query." *# QUERY INCOMPLETA #* </p>";
+																		JOIN partecipazione AS P ON A.persona=P.persona AND A.anno=P.anno 
+																		JOIN istanzaevento AS I ON P.dataInizio=I.dataInizio AND P.evento=I.evento
+																		WHERE I.evento='".$event['evento']."' AND I.dataInizio='".$event['dataInizio']."')
+				ORDER BY nome ASC";
+	echo "<p class=\"query\">".$query."</p>";
 	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
 
    $row_num=mysql_num_rows($risultato);
@@ -508,7 +515,7 @@ function print_form_setPartecipazione($conn,$event){  //GRAFICA HTML
        echo "<h2>Nessun persona da aggiungere trovata</h2>";
    }
    else{
-		echo "<form id=\"setpartecipazione\" action=\"../private_php/getpartecipazione.php\" method=\"get\">";
+		echo "<form id=\"setpartecipazione\" action=\"./setpartecipazione.php\" method=\"get\">";
 		echo<<<END
 	        <!--
 	            Si raccolgono tutte le persone salvate nel database.
@@ -543,7 +550,7 @@ END;
     echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p></div>";
 }
 
-function print_form_setAppartenenza($conn){
+function print_form_setAppartenenza($conn,$info){
 	echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
@@ -552,7 +559,7 @@ END;
 	
 	$query="SELECT p.id, p.nome, p.cognome, p.dataNascita
 			FROM persona AS p JOIN aderente AS a ON p.id=a.persona
-			WHERE a.ruolo='AR' OR a.ruolo='AN' AND a.anno=YEAR(CURDATE())";
+			WHERE (a.ruolo='AR' OR a.ruolo='AN') AND a.anno=YEAR(CURDATE())";
 	
 	echo "<p class=\"query\">".$query."</p>";
 	
@@ -563,9 +570,16 @@ END;
                 echo "<h2>Nessun aderente animatore o animato trovato</h2>";
                 }
         else{
-			  	echo "<h1>Assegna appartenenza tappe ".date('Y')."</h1>";
-			  		 echo "
-	<form id=\"appartenenza\" action=\"../private_php/getappartenenza.php\" method=\"get\">
+			   $primo="fine";
+			  	if(date('d-m-Y')>"30-09-".date('Y')."") $primo="inizio";
+			  
+			  	echo "<h1>Assegna appartenenza tappe ".date('Y')." ($primo)</h1>";
+			  	
+			  if($info)
+				  echo "<h3>".$info."</h3>";
+			  
+			  	echo "
+	<form id=\"appartenenza\" action=\"setappartenenza.php\" method=\"get\">
 			<!--
 				Prelevo le info Nome Cognome DataNascita da Persona riferita agli aderenti con ruolo='AR' or 'AN' dell'anno in corso(es. 2015),
 				Ho la possibilità di assegnare ad essi una tappa tramite NumRiferimento con annoInizio dell'anno in corso(es. 2015).
@@ -581,7 +595,7 @@ END;
 					<th>Cognome</th>
 					<th>Data Nascita</th>
 					<th>N° Tappa</th>
-					<th />
+					<th>Assegna</th>
 				</thead>";
 			  
 				 while($row=mysql_fetch_array($risultato)){
@@ -638,7 +652,7 @@ END;
 				</tbody>
 			</table>";
 	
-	echo "<form id=\"settema\" action=\"../private_php/gettema.php\" method=\"get\"><fieldset>";
+	echo "<form id=\"settema\" action=\"./settema.php\" method=\"get\"><fieldset>";
 	echo "<legend>Seleziona il tema da assegnare</legend>";
 	
 	$query="SELECT nome FROM tema";
@@ -646,6 +660,7 @@ END;
 	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
 	
 	echo "<select name=\"tema\">";
+			echo "<option value=\"NULL\">Nessuno</option>";
 	while($temi=mysql_fetch_array($risultato)){
 		echo "<option value=\"".$temi['nome']."\">".$temi['nome']."</option>";
 	}
@@ -660,7 +675,7 @@ END;
 	echo "</div>";
 }
 
-function print_form_setAssicurazione($conn){
+function print_form_setAssicurazione($conn, $info){
 		echo<<<END
 	<body onload="scroll()">
 	<div id="arcontent">
@@ -682,8 +697,12 @@ END;
                 }
         else{
 			  	echo "<h1>Assicura aderenti ".date('Y')."</h1>";
+			  
+			  if($info)
+				  echo "<h3>".$info."</h3>";
+			  
 					 echo "
-				<form id=\"assicura\" action=\".././private_php/getassicurato.php\" method=\"get\">
+				<form id=\"assicura\" action=\"./setassicurazione.php\" method=\"get\">
 	        <!--
 	            Si raccolgono tutte le persone salvate nel database.
 	            Si costruisce cosi' una tabella a video che rende disponibile la funzione di impostare l'assicurazione 
@@ -712,20 +731,20 @@ END;
                 
         echo "</tbody></table>";
         echo "<p class=\"buttons\"><input class=\"button\" type=\"reset\" value=\"Reset\"/>";
-        echo "<input class=\"button\" type=\"submit\" name=\"Invio\" value=\"Invio\"/></p></fieldset></form>";
+        echo "<input class=\"button\" type=\"submit\" name=\"Modifica\" value=\"Modifica\"/></p></fieldset></form>";
         }
     echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p></div>";
 }
 
 
 /*Cancella*/
-function print_form_deleteIstanza($conn){
+function print_form_deleteIstanza($conn,$info){
 	
 	echo "<body onload=\"scroll()\"><div id=\"arcontent\">
 		<div id=\"arpath\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; rimuovi eventi programmati</div>";
 	
-	$query="SELECT * FROM istanzaevento WHERE dataInizio>CURDATE()";
-	echo "<p class=\"query\">".$query." *# CURDATE() ??? Sicuro?#*</p>";
+	$query="SELECT * FROM istanzaevento WHERE dataInizio>=CURDATE()";
+	echo "<p class=\"query\">".$query."</p>";
 	
 	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
 	
@@ -735,8 +754,12 @@ function print_form_deleteIstanza($conn){
                 }
         else{
 	
-	echo "<h1>Rimuovi eventi programmati</h1>
-		<form id=\"deleteistanza\" action=\"../private_php/deleteistanza.php\" method=\"get\">
+	echo "<h1>Rimuovi eventi programmati</h1>";
+			
+			if($info)
+				echo "<h3>".$info."</h3>";
+			  
+	echo "
 	        <!--
 	           form dove vengno mostrati tutti le istanze d'evento dell'anno in corso da cui è possibile eliminarle
 		    -->
@@ -749,7 +772,7 @@ function print_form_deleteIstanza($conn){
 						<th>Data Fine</th>
 						<th>Luogo</th>
 						<th>Tema</th>
-						<th>Elimina</th>
+						<th />
 					</thead>";
 					
 				while($row=mysql_fetch_array($risultato)){
@@ -759,12 +782,16 @@ function print_form_deleteIstanza($conn){
 					echo "<td>".$row['dataFine']."</td>";
         			echo "<td>".$row['luogo']."</td>";
 					echo "<td>".$row['tema']."</td>";
-			  		echo "<td><input type=\"checkbox\" name=\"elimina[]\" value=\"".$row['evento']."\"></td>";
+			  		echo "<td>
+								<form id=\"deleteistanza\" action=\"./deleteistanza-page.php\" method=\"get\">
+									<input class=\"set_button\" type=\"submit\" name=\"Elimina\" value=\"Elimina\"></td>
+									<input type=\"hidden\" name=\"evento\" value=\"".$row['evento']."\"/>
+									<input type=\"hidden\" name=\"dataInizio\" value=\"".$row['dataInizio']."\"/>
+								</form>
+							</td>";
 					echo "</tr>";
 				}  
-		  echo "</tbody></table>";
-        echo "<p class=\"buttons\"><input class=\"button\" type=\"reset\" value=\"Reset\"/>";
-        echo "<input class=\"button\" type=\"submit\" name=\"Invio\" value=\"Invio\"/></p></fieldset></form>";
+		  echo "</tbody></table></fieldset>";
 		  }
 	echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p></div>";
 }
@@ -807,7 +834,7 @@ function print_form_deletePartecipazione($conn, $event){
        echo "<h2>Nessun partecipante nell'evento selezionato</h2>";
    }
    else{
-		echo "<form id=\"deletepartecipazione\" action=\"../private_php/deletepartecipazione.php\" method=\"get\">";
+		echo "<form id=\"deletepartecipazione\" action=\"./deletepartecipazione-page.php\" method=\"get\">";
 		echo	"
 	        <!--
 	            Si raccolgono tutti gli aderenti partecipanti all'istanza selezionata.
@@ -836,7 +863,7 @@ function print_form_deletePartecipazione($conn, $event){
 		 	echo "<input type=\"hidden\" name=\"evento\" value=\"".$event['evento']."\">";
 			echo "<input type=\"hidden\" name=\"dataInizio\" value=\"".$event['dataInizio']."\">";
         echo "<p class=\"buttons\"><input class=\"button\" type=\"reset\" value=\"Reset\"/>";
-        echo "<input class=\"button\" type=\"submit\" name=\"\" value=\"Modifica\"/></p></fieldset></form>";
+        echo "<input class=\"button\" type=\"submit\" name=\"Elimina\" value=\"Elimina\"/></p></fieldset></form>";
         }
     echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p></div>";	
 	echo "</div>";
@@ -861,7 +888,7 @@ function print_form_deleteAssicurazione($info,$successo){
 	echo "</div>";
 }
 
-function print_form_selectIstanza($conn,$action,$path,$where){
+function print_form_selectIstanza($conn,$action,$path,$where,$info =''){
 	echo "<body onload=\"scroll()\">
 	<div id=\"arcontent\">
 		<div id=\"arpath\">Ti trovi in: <a href=\"./areaadmin.php\">Area riservata</a> &gt;&gt; ".$path."</div>";
@@ -880,7 +907,11 @@ function print_form_selectIstanza($conn,$action,$path,$where){
                 }
         else{
 			  		echo "<h1>".$path." eventi ".date('Y')."</h1>";
-			  		 echo "<fieldset><legend> l'evento da modificare</legend>
+			  
+			  		if($info)
+						echo "<h3>".$info."</h3>";
+			  
+			  		 echo "<fieldset><legend>Seleziona l'evento da modificare</legend>
 			<!--
 				Prelevo i nomi e le dateInizio degli eventi in istanzaevento che hanno il campo tema='null'(es. Kart Endurance 2015-04-25)
 				Infine costruisco il relativo pulsante univoco per ogni riga per selezionare l'e vento interessato.

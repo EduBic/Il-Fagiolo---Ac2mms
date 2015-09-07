@@ -15,10 +15,10 @@ if(isset($_POST["Login"]))
 	$query.=" where utente.username='".$usr."'";
 	$query.=" and utente.password='".$pwd."'";
 	$risultato=mysql_query($query,$conn);
-	if(!$risultato)
+	/*if(!$risultato)
 		{
 		die("La tabella selezionata non esiste" .mysql_error());
-		}
+		}*/
 	if(mysql_num_rows($risultato)==1){
 		$trovato=mysql_fetch_array($risultato);
 		$_SESSION['username']=$trovato['username'];
@@ -33,6 +33,10 @@ if(isset($_POST["Login"]))
 			$_SESSION['redirect']='true';	
 			header('location:../login.php');
 		}
+	}
+	else{
+		$_SESSION['error']=true;
+		header('location:../login.php');
 	}
 	}
 echo "<p><a href='logout.php'>".'logout'."</a></ p>";

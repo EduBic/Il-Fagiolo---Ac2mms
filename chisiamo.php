@@ -25,7 +25,7 @@ if(isset($_GET["select"]))
 	print_maincontent2("def",$ris);
 	} 
           
-print_footer("si");
+print_footer();
 print_close();
 
 ?>

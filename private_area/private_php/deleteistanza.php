@@ -1,20 +1,14 @@
+<?php //effettua la delete della istanza evento dell'anno in corso selezionata
 
-<?php //effettua la delete delle istanze evento dell'anno in corso selezionate tramite checkbox
-if(isset($_GET["Invio"])){
-	$elimina=isset($_GET['elimina']) ? $_GET['elimina'] : array();
-	echo "<p>Istanze da eliminare: ".count($elimina)."</p>";
-		
-	foreach($elimina as $evento){
-  		echo "Elimina evento: ".$evento;
-		/*$query="DELETE FROM istanzaevento
-					WHERE YEAR(dataInizio)=YEAR(CURDATE()) AND evento=$evento;"*/
-	}
+$info='';
+if(isset($_GET["Elimina"])){
+	$query="DELETE FROM istanzaevento
+					WHERE evento='".$_GET['evento']."' AND dataInizio='".$_GET['dataInizio']."'";
+	
+	echo $query;
+			
+	mysql_query($query,$conn) or die("Ops! Errore: ".mysql_error().", contatta l'amministratore.");
+	$info="<span class='si'>Evento rimosso con successo</span>";
 }
-else
-        echo "Ops";
-//header('location:../setaderente.php');
-?>
 
-<?php 
-//connection_db_close($conn);
 ?>
