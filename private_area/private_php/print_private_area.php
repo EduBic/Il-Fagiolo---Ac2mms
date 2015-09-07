@@ -64,7 +64,8 @@ function print_arMenu($user){
    <li class='active has-sub'><a href='#'>Cancella</a>
       <ul>
 			<li><a href="./deleteistanza-page.php">Istanza Evento</a></li>
-			<li><a href="./deletepartecipazione-page.php">Partecipanti Evento</a></li>
+			<li><a href="./deletepartecipazione-page.php">Partecipazione</a></li>
+			<li><a href="./deleteappartenenza-page.php">Appartenenza</a></li>
 			<li><a href="./deleteassicurazione.php">Assicurazione</a></li>
       </ul>
    </li>
@@ -94,7 +95,7 @@ END;
 			<li><a href="./dettaglitema-page1.php">Dettagli Tema</a></li>
    	</ul>
    </li>
-   <li><a href='./queryavanzate.php'>Query Avanzate</a></li>
+	<li><a href='../../php/logout.php'>Logout</a></li>
 </ul>
 </div>
 END;
@@ -106,8 +107,23 @@ function print_arContent($user){
 	echo<<<END
 	<body>
 	<div id="arcontent">
-			<h2>AREA ADMIN</h2>
-			<p></p>
+		<h1>Area amministrazione base di dati</h1>
+		<p>Sono disponibili i diversi servizi divisi per l'azione da eseguire:</p>
+		<dl>
+			<dt class="info">Aggiungi:</dt>
+			<dd class="info">Aggiungi nuovi dati alle tabelle del database.</dd>
+			<dt class="info">Assegna:</dt> 
+			<dd class="info">Imposta l'aderenza, la partecipazione, l'appartenenza, l'assicurazione e il tema agli iscritti dell'anno in corso e agli eventi dell'anno in corso.</dd>
+			<dt class="info">Cancella:</dt>
+			<dd class="info">Rimuovi eventuali dati obsoleti o errati.<dd>
+			</dl>
+		
+		<div id="help">
+			<p>
+				Link utili: <a href="../../index.php">Home page</a> - <a href="../../mappa.html">Mappa del sito</a>
+			</p>
+		</div>
+		
 	</div>
 END;
 	}
@@ -123,9 +139,6 @@ END;
 			<dt class="info">Operazioni:</dt> 
 			<dd class="info">In cui avrai a disposizioni molteplici possibilità di interrogazioni alla base 
 			di dati per ricavare subito e in semplicità le informazioni di tuo interesse.</dd>
-			<dt class="info">Query Avanzate:</dt> 
-			<dd class="info">Sezione con le query costruite solo ai fini didattici del progetto accompagnate 
-			da descrizione testuale.<dd>
 			</dl>
 		<h2>Buon lavoro!</h2>
 		
@@ -317,6 +330,7 @@ END;
         $risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
 
 			echo	"<p><label>Tema* </label><select name='tema' class='tema'>";
+			echo "<option>Nessuno</option>";
 			while($row=mysql_fetch_array($risultato)){
 			echo "<option>".$row['nome']."</option>";
 			}
@@ -463,7 +477,7 @@ END;
 		</td>";
 		
         echo "	<td>
-        				<input type=\"checkbox\" name=\"modifica[]\" value=\"".$row['id']."\">
+        				<input class=\"selecttable\" type=\"checkbox\" name=\"modifica[]\" value=\"".$row['id']."\">
 					</td>";
                 echo "</tr>"; //chiudo la row iniziata da print_table_rows
                 }
@@ -501,7 +515,7 @@ function print_form_setPartecipazione($conn,$event){  //GRAFICA HTML
 	
 	$query="SELECT id,nome,cognome,dataNascita 
 				FROM persona JOIN aderente ON Id=Persona 
-				WHERE anno=YEAR(CURDATE()) AND id NOT IN (SELECT PE.id 
+				WHERE assicurato='si' AND anno=YEAR(CURDATE()) AND id NOT IN (SELECT PE.id 
 																		FROM persona AS PE JOIN aderente AS A ON PE.id=A.persona 
 																		JOIN partecipazione AS P ON A.persona=P.persona AND A.anno=P.anno 
 																		JOIN istanzaevento AS I ON P.dataInizio=I.dataInizio AND P.evento=I.evento
@@ -537,7 +551,7 @@ END;
 
         while($row=mysql_fetch_array($risultato)){
             print_table_rows($row);
-		  		echo "<td><input type=\"checkbox\" name=\"aggiungi[]\" value=\"".$row['id']."\"></td></tr>";
+		  		echo "<td><input class=\"selecttable\" type=\"checkbox\" name=\"aggiungi[]\" value=\"".$row['id']."\"></td></tr>";
             echo "</tr>"; //chiudo la row iniziata da print_table_row
 		  }
                 
@@ -559,7 +573,10 @@ END;
 	
 	$query="SELECT p.id, p.nome, p.cognome, p.dataNascita
 			FROM persona AS p JOIN aderente AS a ON p.id=a.persona
-			WHERE (a.ruolo='AR' OR a.ruolo='AN') AND a.anno=YEAR(CURDATE())";
+			WHERE (a.ruolo='AR' OR a.ruolo='AN') AND a.anno=YEAR(CURDATE()) 
+					AND p.id NOT IN (SELECT AP.aderentePersona
+											FROM appartenenza AS AP
+											WHERE AP.aderenteAnno=YEAR(CURDATE()))";
 	
 	echo "<p class=\"query\">".$query."</p>";
 	
@@ -602,7 +619,7 @@ END;
                 print_table_rows($row);
 					 
 					 echo "<td>
-						<select name=\"".$row['id']."\">   <!-- Id dell'utente -->
+						<select class=\"selecttable\"name=\"".$row['id']."\">   <!-- Id dell'utente -->
 							<option value=\"1\">1</option>
 							<option value=\"2\">2</option>
 							<option value=\"3\">3</option>
@@ -612,7 +629,7 @@ END;
 						</td>";
 						
 					 //echo "<td><input type=\"submit\" name=\"Modifica\" value=\"".$row['id']."\"/></td></tr>";  //check box con id
-					 echo "<td><input type=\"checkbox\" name=\"modifica[]\" value=\"".$row['id']."\"></td></tr>";
+					 echo "<td><input class=\"selecttable\" type=\"checkbox\" name=\"modifica[]\" value=\"".$row['id']."\"></td></tr>";
 					 }  
 		  echo "</tbody></table>";
         echo "<p class=\"buttons\"><input class=\"button\" type=\"reset\" value=\"Reset\"/>";
@@ -724,7 +741,7 @@ END;
         while($row=mysql_fetch_array($risultato)){
                 print_table_rows($row);
         		echo "<td>
-							<input type=\"checkbox\" name=\"modifica[]\" value=\"".$row['id']."\">
+							<input class=\"selecttable\" type=\"checkbox\" name=\"modifica[]\" value=\"".$row['id']."\">
 						</td>";
             echo "</tr>"; //chiudo la row iniziata da print_table_rows
         }
@@ -855,7 +872,7 @@ function print_form_deletePartecipazione($conn, $event){
 
         while($row=mysql_fetch_array($risultato)){
             print_table_rows($row);
-		  		echo "<td><input type=\"checkbox\" name=\"elimina[]\" value=\"".$row['id']."\"></td></tr>";
+		  		echo "<td><input class=\"selecttable\" type=\"checkbox\" name=\"elimina[]\" value=\"".$row['id']."\"></td></tr>";
             echo "</tr>"; //chiudo la row iniziata da print_table_row
 		  }
                 
@@ -948,6 +965,69 @@ function print_form_selectIstanza($conn,$action,$path,$where,$info =''){
 			echo "</tbody></table></fieldset>";
 		  }
 	echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p></div>";
+}
+
+function print_form_deleteAppartenenza($conn,$info){
+		echo<<<END
+	<body onload="scroll()">
+	<div id="arcontent">
+	<div id="arpath">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Cancella Appartenenza</div>
+END;
+	
+	$query="SELECT p.id, p.nome, p.cognome, p.dataNascita, a.anno, ap.tappaNumRif
+			FROM persona AS p JOIN aderente AS a ON p.id=a.persona 
+									JOIN appartenenza AS ap ON a.persona=ap.aderentePersona AND a.anno=ap.aderenteAnno
+			WHERE (a.ruolo='AR' OR a.ruolo='AN') AND a.anno=YEAR(CURDATE()) AND ap.tappaAnnoFine=YEAR(CURDATE())";
+	
+	echo "<p class=\"query\">".$query."</p>";
+	
+	$risultato=mysql_query($query,$conn) or die( "Ops".mysql_error());
+	
+	$row_num=mysql_num_rows($risultato);
+        if(!$row_num){
+                echo "<h2>Nessun aderente animatore o animato trovato</h2>";
+                }
+        else{
+			   $primo="fine";
+			  	if(date('d-m-Y')>"30-09-".date('Y')."") $primo="inizio";
+			  
+			  	echo "<h1>Rimuovi appartenenza tappe ".date('Y')." ($primo)</h1>";
+			  	
+			  if($info)
+				  echo "<h3>".$info."</h3>";
+			  
+			  	echo "
+			<fieldset>
+			<legend>Rimuovi appartenenza tappa - ".date('Y')."</legend>
+			<table>
+				<thead>
+					<th>Nome</th>
+					<th>Cognome</th>
+					<th>Data Nascita</th>
+					<th>Anno</th>
+					<th>N° Tappa</th>
+					<th>Rimuovi</th>
+				</thead>";
+			  
+				 while($row=mysql_fetch_array($risultato)){
+                print_table_rows($row);
+					 
+					 echo "
+					 		<td>".$row['anno']."</th>
+							<td>".$row['tappaNumRif']."</td>
+							<td>
+					 			<form id=\"appartenenza\" action=\"deleteappartenenza-page.php\" method=\"get\">
+					 				<input class=\"set_button\"type=\"submit\" name=\"Elimina\" value=\"Elimina\">
+									<input type=\"hidden\" name=\"id\" value=\"".$row['id']."\">
+									<input type=\"hidden\" name=\"anno\" value=\"".$row['anno']."\">
+									<input type=\"hidden\" name=\"tappaNumRif\" value=\"".$row['tappaNumRif']."\">
+								</form>
+							</td>
+						</tr>";
+					 }  
+		  echo "</tbody></table>";
+        }
+    echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p></div>";
 }
 
 
@@ -1521,7 +1601,7 @@ END;
 	echo "<p class=\"query\">".$query."</p>";
 	$numMembri=mysql_query($query,$conn) or die('Ops'.mysql_error());
 	
-	echo "<h1>Andamento N° componenti tappe negli anni</h1>";
+	echo "<h1>Andamento N° animati tappe negli anni</h1>";
 	$num_rows=mysql_num_rows($numMembri);
 	if($num_rows!=0){
 						echo "<table>
@@ -1632,7 +1712,7 @@ END;
 					GROUP BY anno) AS A
 				
 				ON I.data=A.anno
-				ORDER BY anno DESC";
+				ORDER BY dataInizio DESC";
 	
 	echo "<p class=\"query\">".$query."</p>";
 	$numPart=mysql_query($query,$conn) or die('Ops'.mysql_error());

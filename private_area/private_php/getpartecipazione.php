@@ -6,7 +6,7 @@ if(isset($_GET["Invio"])){
 	//echo "<p>Partecipanti da aggiungere: ".count($aggiungi)."</p><p> all'evento: ".$_GET['evento']." con data: ".$_GET['dataInizio']."</p>";
 	
 	$anno=date('Y');
-	$query="INSERT INTO `acmms`.`partecipazione` (`persona`, `anno`, `dataInizio`, `evento`) VALUES ";
+	$query="INSERT INTO `partecipazione` (`persona`, `anno`, `dataInizio`, `evento`) VALUES ";
 	$length=count($aggiungi);
 	$i=true;
 	foreach($aggiungi as $id){

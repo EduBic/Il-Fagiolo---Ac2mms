@@ -19,9 +19,16 @@ if(isset($_GET["Inserisci"])){
 			$dataFine=format_data($_GET['yyf'],$_GET['mmf'],$_GET['ggf']);
 			
 				if($dataInizio<=$dataFine){
+				
+				//Gestisco il tema a Null
+				if($_GET['tema']=='Nessuno')
+					$tema='NULL';
+				else
+					$tema="'".$_GET['tema']."'";
 			
 				$test=true;
-				$query="INSERT INTO istanzaevento VLAUES (".$_GET['evento'].", $dataInizio, $dataFine, ".$_GET['luogo'].", ".$_GET['programma'].", ".$_GET['tema'].")";
+				$query="INSERT INTO istanzaevento (`evento`, `dataInizio`, `dataFine`, `luogo`, `nPartecipanti`, `programma`, `tema`) VALUES ('".$_GET['evento']."', '$dataInizio', '$dataFine', '".$_GET['luogo']."', '0', '".$_GET['programma']."', $tema)";
+					echo $query;
 				mysql_query($query,$conn) or $test=false;
 			
 					if($test){
@@ -47,6 +54,5 @@ print_form_addIstanza($conn,$info,$successo);
 
 print_arfooter();
 print_close();
-
 
 ?>

@@ -24,7 +24,7 @@
 }
 
 #arcontent{
-   min-height: 683px;
+   min-height: 725px;
 	margin: 0;
 	padding: 4%;
 	width: 72%;
@@ -99,6 +99,8 @@ td{
 }
 
 input.set_button{
+	width: 100%;
+	height: 100%;
 	padding: 0;
 	margin: 0;
 }
@@ -119,6 +121,11 @@ p.info{
 p#back-page-link{
 	padding: 1em;
 	text-align: left;
+}
+
+input.selecttable{
+	width: 20px;
+	height: 20px;
 }
 
 select.selecttable {

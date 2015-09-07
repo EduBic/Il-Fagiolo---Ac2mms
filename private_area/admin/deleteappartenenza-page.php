@@ -6,13 +6,13 @@ require_file();
 $conn=connection_db();
 session_control();
 
-include('../private_php/deleteistanza.php');
+include('../private_php/deleteappartenenza.php');
 
 $user="Admin";
 print_arHeader($user);
 print_arMenu($user);
 
-print_form_deleteIstanza($conn,$info);
+print_form_deleteAppartenenza($conn,$info);
 
 print_arfooter();
 print_close();
