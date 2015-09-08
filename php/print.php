@@ -109,22 +109,6 @@ function print_header(){
 END;
 }
 
-
-
-/*function print_menu(){
-echo<<<END
-		<div id="container">
-		<div id="menu">
-			<ul>
-				<li><a href="index.php">Home</a></li>
-				<li><a href="chisiamo.html">Chi Siamo</a></li>
-				<li><a href="cosafacciamo.php">Cosa Facciamo</a></li>
-				<li><a href="login.php">Login</a></li>
-			</ul>
-		</div>
-END;
-}*/
-
 /*PRINT MENU CON LA SESSIONE E Logout*/
 function print_menu(){
 echo<<<END
@@ -246,13 +230,9 @@ function print_maincontent(){
         
         <div id="main-content" class="content">
 				<h2>Welcome!</h2>
-				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-				Quisque molestie, nisl sed vulputate mollis, tortor velit facilisis mi, laoreet iaculis erat turpis id orci. 
-				Proin a semper lectus. Pellentesque egestas sodales libero, vel dapibus ipsum bibendum eu. 
-				Mauris malesuada magna arcu, sed dapibus libero suscipit ut. Quisque vestibulum nec nisl sit amet tincidunt. 
-				Donec id lorem quam. Phasellus fermentum tortor vel varius elementum. Nunc rutrum magna et enim ultrices facilisis. 
-				Phasellus tellus lacus, imperdiet vitae sollicitudin facilisis, commodo vitae nisl. 
-				Sed pharetra, orci quis volutpat mattis, magna ipsum cursus ipsum, et mollis lorem mi sit amet metus. Morbi et mauris.</p>
+				<p>L'Associazione Cattolica Campeggio Meledo Monticello di Fara Sarego è un'associazione no-profit che opera nel campo dell'educazione giovanile di Azione Cattolica.
+
+L'Associazione nasce nel 1991 per volontà di don Franco Primon, allora parroco di Monticello di Fara, e di Pierluigi Volpiana. Da allora l'Associazione è cresciuta e si è evoluta, mantenendo però i punti cardine dell'educazione alla vita cristiana ed all'essenzialità tramite i campeggi estivi in tenda e le attività di gruppo settimanali che si svolgono durante l'anno.</p>
 			</div>
 		
 	</div>	

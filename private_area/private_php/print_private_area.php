@@ -40,7 +40,7 @@ function print_arMenu($user){
 		echo<<<END
 <div id='armenu'>
 <ul>
-   <li><a href='./areaadmin.php'>Menu</a></li>
+   <li><a href='./areaadmin.php'>Area Admin</a></li>
    <li class='active has-sub'><a href='#'>Aggiungi</a>
       <ul>
          <li><a href="./addpersona.php">Persona</a></li>
@@ -51,7 +51,7 @@ function print_arMenu($user){
       </ul>
    </li>
 	
-   <li class='active has-sub'><a href='#'>Assegna</a>
+   <li class='has-sub'><a href='#'>Assegna</a>
       <ul>
         	<li><a href="./setaderente.php">Iscrizione Aderente</a></li>
 			<li><a href="./setpartecipazione.php">Partecipazione</a></li>
@@ -61,7 +61,7 @@ function print_arMenu($user){
       </ul>
    </li>
 	
-   <li class='active has-sub'><a href='#'>Cancella</a>
+   <li class='has-sub'><a href='#'>Cancella</a>
       <ul>
 			<li><a href="./deleteistanza-page.php">Istanza Evento</a></li>
 			<li><a href="./deletepartecipazione-page.php">Partecipazione</a></li>
@@ -80,8 +80,8 @@ END;
 
 <div id='armenu'>
 <ul>
-   <li><a href='./areasocio.php'>Menu</a></li>
-   <li class='active has-sub'><a href='#'>Statistiche</a>
+   <li><a href='./areasocio.php'>Area Socio</a></li>
+   <li class='has-sub'><a href='#'>Statistiche</a>
       <ul>
          <li><a href='./stat-aderenti.php'>Aderenti</a></li>
 	 		<li><a href='./stat-eventi.php'>Eventi</a></li>
@@ -1080,7 +1080,7 @@ function print_form_selectTappa($conn){
                 echo "<tr>";
 					 	echo "<td>".$row['annata']."</td>";
 					 	echo "<form id=\"selecttappa\" action=\"./infotappa-page2.php\" method=\"post\">";
-					 	echo "<td><select name=\"numero\">
+					 	echo "<td><select class=\"selecttable\" name=\"numero\">
 									<option value=\"1\">1</option>
 									<option value=\"2\">2</option>
 									<option value=\"3\">3</option>
@@ -1313,6 +1313,7 @@ function print_progevento($conn,$evento){
 	}
 	else echo "<h1>C'è stato un problema con l'evento selezionato</h1>";
 	
+	echo "<p id=\"back-page-link\"><a href=\"./progevento-page1.php\">Indietro</a></p>";
 	echo "</div>";
 }
 
