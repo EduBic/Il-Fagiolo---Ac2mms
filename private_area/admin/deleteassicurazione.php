@@ -9,7 +9,7 @@ session_control();
 $info='';
 $successo='no';
 
-if(isset($_GET['Reset'])){
+if(isset($_POST['Reset'])){
 	$query="call insurance_flag('no')";
 	$test=true;
 	mysql_query($query,$conn) or $test=false;
@@ -32,4 +32,5 @@ print_arfooter();
 print_close();
 
 
+connection_db_close($conn);
 ?>

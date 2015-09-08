@@ -9,16 +9,18 @@ session_control();
 $info="";
 $successo="no";
 
-if(isset($_GET['Inserisci'])){
+if(isset($_POST['Inserisci'])){
 	
-	if(!empty($_GET['annata'])){
+	if(!empty($_POST['annata'])){
 		
-		$query="call inserisci_annata(".$_GET['annata'].")";
+		$query="call inserisci_annata(".$_POST['annata'].")";
 		//echo "<p class=\"query\">".$query."</p>";
 		
 		$test=true;
 		
 		mysql_query($query,$conn) or $test=false;
+		connection_db_close($conn);
+		
 		if($test){
 			$info="Inserimento avvenuto con successo";
 			$successo="si";

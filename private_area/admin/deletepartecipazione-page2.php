@@ -1,5 +1,5 @@
 <?php
-if(isset($_GET["Seleziona"])){
+if(isset($_POST["Seleziona"])){
 	require("../private_php/print_private_area.php");
 	require_file();
 
@@ -10,10 +10,12 @@ if(isset($_GET["Seleziona"])){
 	print_arHeader($user);
 	print_arMenu($user);
 
-	print_form_deletePartecipazione($conn,$_GET);
+	print_form_deletePartecipazione($conn,$_POST);
 
 	print_arfooter();
 	print_close();
+	
+	connection_db_close($conn);
 }
 
 ?>

@@ -17,4 +17,6 @@ print_form_selectIstanza($conn,"deletepartecipazione-page2.php","Cancella partec
 print_arfooter();
 print_close();
 
+connection_db_close($conn);
+
 ?>

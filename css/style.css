@@ -16,6 +16,7 @@ body{
 
 p.query{
 	background-color: yellow;
+	display:none;
 }
 
 

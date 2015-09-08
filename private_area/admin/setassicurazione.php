@@ -17,5 +17,6 @@ print_form_setAssicurazione($conn, $info);
 print_arfooter();
 print_close();
 
+connection_db_close($conn);
 
 ?>

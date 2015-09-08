@@ -17,4 +17,6 @@ print_form_deleteIstanza($conn,$info);
 print_arfooter();
 print_close();
 
+connection_db_close($conn);
+
 ?>

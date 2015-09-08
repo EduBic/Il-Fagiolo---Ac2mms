@@ -17,4 +17,6 @@ print_form_selectIstanza($conn,"setpartecipazione-page2.php","Assegna partecipan
 print_arfooter();
 print_close();
 
+connection_db_close($conn);
+
 ?>

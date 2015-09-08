@@ -6,55 +6,50 @@ require_file();
 $conn=connection_db();
 session_control();
 
-$info='';
-$successo='no';
-
-if(isset($_GET["Inserisci"])){
+if(isset($_POST["Inserisci"])){
 	//Verifiche integrità dati
-	if(empty(!$_GET['nome']) && empty(!$_GET['cognome']) && empty(!$_GET['gg']) && empty(!$_GET['mm']) && empty(!$_GET['yy']) &&
-		empty(!$_GET['luogoN'])){
+	if(empty(!$_POST['nome']) && empty(!$_POST['cognome']) && empty(!$_POST['gg']) && empty(!$_POST['mm']) && empty(!$_POST['yy']) &&
+		empty(!$_POST['luogoN'])){
 		
-		if(checkdate($_GET['mm'], $_GET['gg'], $_GET['yy'])){
+		if(preg_match("/^[^@ ]{2,}@[^@ \.]+\.[^@ \.]{2,}$/",$_POST['email'])){
+		
+			if(checkdate($_POST['mm'], $_POST['gg'], $_POST['yy'])){		
+				$dataN=format_data($_POST['yy'], $_POST['mm'], $_POST['gg']);
+				$test=true;
 			
-			$dataN=format_data($_GET['yy'], $_GET['mm'], $_GET['gg']);
+				$query="INSERT INTO persona (`id`, `nome`, `cognome`, `sesso`, `dataNascita`, `luogoNascita`, `telefono`, `email`, `parrocchia`, `assicurato`) VALUES ('', '".$_POST['nome']."', '".$_POST['cognome']."', '".$_POST['sesso']."', '$dataN', '".$_POST['luogoN']."', '".$_POST['telefono']."', '".$_POST['email']."', '".$_POST['parrocchia']."', 'no')";
+				mysql_query($query, $conn) or $test=false;
 			
-			$test=true;
+				connection_db_close($conn);
 			
-			$query="INSERT INTO persona (`id`, `nome`, `cognome`, `sesso`, `dataNascita`, `luogoNascita`, `telefono`, `email`, `parrocchia`, `assicurato`) VALUES ('', '".$_GET['nome']."', '".$_GET['cognome']."', '".$_GET['sesso']."', '$dataN', '".$_GET['luogoN']."', '".$_GET['telefono']."', '".$_GET['email']."', '".$_GET['parrocchia']."', 'no')";
-			mysql_query($query, $conn) or $test=false;
-			
-			if($test){
-				$info="Inserimento avvenuto con successo";
-				$successo='si';
+				if($test){
+					$mess=urlencode("siInserimento avvenuto con successo");
+					header('location: '.$_SERVER['PHP_SELF'].'?msg='.$mess);
+				}
 			}
+			else{
+				$mess=urlencode("noIl campo data non è valido");
+				header('location: '.$_SERVER['PHP_SELF'].'?msg='.$mess);
+			}
+			
 		}
-		else
-			$info="Il campo data non è valido";
+		else{
+			$mess=urlencode("noInserire una email valida");
+			header('location: '.$_SERVER['PHP_SELF'].'?msg='.$mess);	
+		}
+		
 	}
-	else
-		$info="Nessun campo può essere lasciato vuoto";
-			
-	//query INSERT
-	
-/*
-
-get from form "persona"
-$nome
-$cognome
-$data
-...
-$assicurato="no";
-
-$query="INSERT INTO Persona(Id, VALUE,...) VLAUES ...";
-*/
-			
+	else{
+		$mess=urlencode("noI campi contrassegnati da * sono obbligatori");
+		header('location: '.$_SERVER['PHP_SELF'].'?msg='.$mess);
+	}
 }
 
 $user="Admin";
 print_arHeader($user);
 print_arMenu($user);
 
-print_form_addPersona($info,$successo);
+print_form_addPersona();
 
 print_arfooter();
 print_close();

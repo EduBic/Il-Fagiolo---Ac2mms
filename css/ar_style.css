@@ -119,7 +119,9 @@ p.info{
 }
 
 p#back-page-link{
-	padding: 1em;
+	padding-top: 0.5em;
+	padding-left: 1em;
+	padding-right: 1em;
 	text-align: left;
 }
 

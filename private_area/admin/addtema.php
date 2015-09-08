@@ -9,13 +9,14 @@ session_control();
 $info='';
 $successo='no';
 
-if(isset($_GET["Inserisci"])){
+if(isset($_POST["Inserisci"])){
 	//Verifiche integrità dati
-	if(!empty($_GET['nome'])){
+	if(!empty($_POST['nome'])){
 			
 			$test=true;
-			$query="INSERT INTO tema (`nome`,`descrizione`) VALUES ('".$_GET['nome']."', '".$_GET['descrizione']."')";
+			$query="INSERT INTO tema (`nome`,`descrizione`) VALUES ('".$_POST['nome']."', '".$_POST['descrizione']."')";
 			mysql_query($query,$conn) or $test=false;
+			connection_db_close($conn);
 			
 			if($test){
 				$info="Inserimento avvenuto con successo";

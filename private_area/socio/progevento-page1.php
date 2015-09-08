@@ -16,4 +16,6 @@ print_form_selectIstanza($conn,'progevento-page2.php','Programma evento','');
 print_arfooter();
 print_close();
 
+connection_db_close($conn);
+
 ?>

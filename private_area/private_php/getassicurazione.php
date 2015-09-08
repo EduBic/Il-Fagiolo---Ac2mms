@@ -1,8 +1,8 @@
 <?php //effettua la delete della istanza evento dell'anno in corso selezionata
 
 $info='';
-if(isset($_GET["Modifica"])){
-	$modifica=isset($_GET['modifica']) ? $_GET['modifica'] : array();
+if(isset($_POST["Modifica"])){
+	$modifica=isset($_POST['modifica']) ? $_POST['modifica'] : array();
 	
 	$i=true;
 	foreach($modifica as $id){

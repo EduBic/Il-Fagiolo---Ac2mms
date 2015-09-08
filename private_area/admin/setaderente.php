@@ -12,9 +12,11 @@ $user="Admin";
 print_arHeader($user);
 print_arMenu($user);
 
-print_form_setAderente($conn,$info);
+print_form_setAderente($conn);
 
 print_arfooter();
 print_close();
+
+connection_db_close($conn);
 
 ?>

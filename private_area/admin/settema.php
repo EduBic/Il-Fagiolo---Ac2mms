@@ -17,4 +17,6 @@ print_form_selectIstanza($conn,"settema-page2.php","Assegna tema","WHERE YEAR(da
 print_arfooter();
 print_close();
 
+connection_db_close($conn);
+
 ?>
