@@ -12,6 +12,7 @@ $successo="no";
 if(isset($_POST['Inserisci'])){
 	
 	if(!empty($_POST['annata'])){
+	     if(preg_match("[1950-2100]",$_POST['annata'])){ 
 		
 		$query="call inserisci_annata(".$_POST['annata'].")";
 		//echo "<p class=\"query\">".$query."</p>";
@@ -29,6 +30,9 @@ if(isset($_POST['Inserisci'])){
 			$info="Inserimento non riuscito, la tappa esiste già";
 			$successo="no";
 		}
+		}
+	     else
+	        $info="L'annata deve essere compresa tra 1950 e 2100";
 	}
 	else
 		$info="Campo dati vuoto!";

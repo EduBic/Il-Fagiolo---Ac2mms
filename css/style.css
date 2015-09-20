@@ -90,6 +90,17 @@ img{
 	border: none;
 }
 
+#mappa{
+        display: block;
+        margin: 0 auto;
+        width: 35%;
+        height: 35%;
+}
+
+.mappa li{
+        padding: 0.2%;
+}
+
 
 /*CSS per possibile slider Home*/
 

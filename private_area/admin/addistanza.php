@@ -28,7 +28,7 @@ if(isset($_POST["Inserisci"])){
 					$tema="'".$_POST['tema']."'";
 			
 				$test=true;
-				$query="INSERT INTO istanzaevento (`evento`, `dataInizio`, `dataFine`, `luogo`, `nPartecipanti`, `programma`, `tema`) VALUES ('".$_POST['evento']."', '$dataInizio', '$dataFine', '".$_POST['luogo']."', '0', '".$_POST['programma']."', $tema)";
+				$query="INSERT INTO istanzaevento (`evento`, `dataInizio`, `dataFine`, `luogo`, `nPartecipanti`, `programma`, `tema`) VALUES ('".addslashes($_POST['evento'])."', '$dataInizio', '$dataFine', '".addslashes($_POST['luogo'])."', '0', '".addslashes($_POST['programma'])."', ".addslashes($tema).")";
 					//echo $query;
 				mysql_query($query,$conn) or $test=false;
 			

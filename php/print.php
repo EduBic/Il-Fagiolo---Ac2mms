@@ -109,7 +109,7 @@ function print_header(){
 END;
 }
 
-/*PRINT MENU CON LA SESSIONE E Logout*/
+
 function print_menu(){
 echo<<<END
 		<div id="container">
@@ -254,6 +254,33 @@ echo<<<END
 END;
 }
 
+function print_map(){
+echo<<<END
+		<div id="main-content2" class="content">
+		
+			<h2>Smarrito il sentiero?</h2>
+			
+			<ul class='mappa'>
+				<li><a href="index.php">Home</a></li>
+				<li class='right'><a href="chisiamo.php">Chi Siamo</a></li>
+				<li><a href="cosafacciamo.php">Cosa Facciamo</a></li>
+END;
+				
+				if(!isset($_SESSION['username']))
+					echo "<li class='right'><a href='login.php'>Login</a></li>";
+				else
+					echo "<li class='right'><a href='php/logout.php'>Logout</a></li>";
+				
+echo<<<END
+				<li><a href="./private_area/admin/areaadmin.php">Area Admin</a></li>
+				<li class='right'><a href="./private_area/socio/areasocio.php">Area Socio</a></li>
+			</ul>	
+			
+			<img id="mappa" src="./img/mappa2.jpg" alt="Dove andare?" />
+		</div>
+END;
+}
+
 function print_form(){
 echo<<<END
 <div id="form">
@@ -293,16 +320,23 @@ function print_footer($body ="no"){
 		        <p>Antonino Macr&iacute; - Eduard Bicego</p>
 		</div>
 		<div class="left">
-			<h3><a href="mappa.html">Mappa del sito</a></h3>
+			<h3><a href="mappa.php">Mappa del sito</a></h3>
 			<ul>
 				<li><a href="index.php">Home</a></li>
-				<li><a href="chisiamo.html">Chi Siamo</a></li>
+				<li><a href="chisiamo.php">Chi Siamo</a></li>
 				<li><a href="cosafacciamo.php">Cosa Facciamo</a></li>
-				<li><a href="login.php">Login</a></li>
+END;
+				
+				if(!isset($_SESSION['username']))
+					echo "<li><a href='login.php'>Login</a></li>";
+				else
+					echo "<li><a href='php/logout.php'>Logout</a></li>";
+				
+echo "		
 			</ul>
 		</div>
-	</div>
-END;
+	</div>";
+	
 	if($body=="si")
 		echo "</body>";
 }

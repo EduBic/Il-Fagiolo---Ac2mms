@@ -51,7 +51,7 @@ function print_arMenu($user){
       </ul>
    </li>
 	
-   <li class='has-sub'><a href='#'>Assegna</a>
+   <li class='active has-sub'><a href='#'>Assegna</a>
       <ul>
         	<li><a href="./setaderente.php">Iscrizione Aderente</a></li>
 			<li><a href="./setpartecipazione.php">Partecipazione</a></li>
@@ -61,7 +61,7 @@ function print_arMenu($user){
       </ul>
    </li>
 	
-   <li class='has-sub'><a href='#'>Cancella</a>
+   <li class='active has-sub'><a href='#'>Cancella</a>
       <ul>
 			<li><a href="./deleteistanza-page.php">Istanza Evento</a></li>
 			<li><a href="./deletepartecipazione-page.php">Partecipazione</a></li>
@@ -69,6 +69,7 @@ function print_arMenu($user){
 			<li><a href="./deleteassicurazione.php">Assicurazione</a></li>
       </ul>
    </li>
+        <li><a href='./password'>Cambio Password</a></li>
 	<li><a href='../../php/logout.php'>Logout</a></li>
 </ul>
 </div>
@@ -81,7 +82,7 @@ END;
 <div id='armenu'>
 <ul>
    <li><a href='./areasocio.php'>Area Socio</a></li>
-   <li class='has-sub'><a href='#'>Statistiche</a>
+   <li class='active has-sub'><a href='#'>Statistiche</a>
       <ul>
          <li><a href='./stat-aderenti.php'>Aderenti</a></li>
 	 		<li><a href='./stat-eventi.php'>Eventi</a></li>
@@ -160,10 +161,10 @@ function print_arfooter(){
 		        <p>Antonino Macr&iacute; - Eduard Bicego</p>
 		</div>
 		<div class="left">
-			<h3><a href="../../mappa.html">Mappa del sito</a></h3>
+			<h3><a href="../../mappa.php">Mappa del sito</a></h3>
 			<ul>
 				<li><a href="../../index.php">Home</a></li>
-				<li><a href="../../chisiamo.html">Chi Siamo</a></li>
+				<li><a href="../../chisiamo.php">Chi Siamo</a></li>
 				<li><a href="../../cosafacciamo.php">Cosa Facciamo</a></li>
 				<li><a href="../../php/logout.php">Logout</a></li>
 			</ul>
@@ -759,6 +760,42 @@ END;
         echo "<input class=\"button\" type=\"submit\" name=\"Modifica\" value=\"Modifica\"/></p></fieldset></form>";
         }
     echo "<p id=\"top-page-link\"><a href=\"#arcontent\">Torna su</a></p></div>";
+}
+
+function print_form_setpassword(){
+	echo<<<END
+	<body onload="scroll()">
+	<div id="arcontent">
+	<div id="arpath">Ti trovi in: <a href="./areaadmin.php">Area riservata</a> &gt;&gt; Cambia password</div>
+END;
+	
+	echo "<h1>Cambia Password:</h1>";
+	
+	if(isset($_GET['msg'])){
+	        echo "<h3><span class=\"".substr($_GET['msg'],0,2)."\">".substr(htmlentities($_GET['msg']),2)."</span></h3>";
+	}
+	
+	echo "<h2>Area Admin</h2>";
+	echo "<form id=\"setpwdadmin\" action=\"#\" method=\"post\"><fieldset>";
+	echo "<legend>Cambia password area admin</legend>";
+	
+	echo "<p><label>Password</label><input class='text' type=\"password\" name=\"oldpwd\" value=\"oldpwd\"/></p>";
+	echo "<p><label>Nuova Password</label><input class='text' type=\"password\" name=\"newpwd\" value=\"newpwd\"/></p>";
+	
+	echo "<p><input class=\"button\" type=\"submit\" name=\"ModificaAdmin\" value=\"Modifica\"/></p>
+	</fieldset></form>";
+	
+	echo "<h2>Area Socio</h2>";
+	echo "<form id=\"setpwdsocio\" action=\"#\" method=\"post\"><fieldset>";
+	echo "<legend>Cambia password area socio</legend>";
+	
+	echo "<p><label>Password</label><input class='text' type=\"password\" name=\"oldpwd\" value=\"oldpwd\"/></p>";
+	echo "<p><label>Nuova Password</label><input class='text' type=\"password\" name=\"newpwd\" value=\"newpwd\"/></p>";
+	
+	echo "<p><input class=\"button\" type=\"submit\" name=\"ModificaSocio\" value=\"Modifica\"/></p>
+	</fieldset></form>";
+	
+	echo "</div>";
 }
 
 

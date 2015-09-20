@@ -1,10 +1,10 @@
 <?php
 
 function connection_db(){ 
-  $dbname="acmms";
-  $server="localhost";
-  $username="root";
-  $password="1234";
+  $dbname="ebicego-PR";
+  $server="basidati";
+  $username="ebicego";
+  $password="ofFX0oe2";
 
   $conn=mysql_connect($server,$username,$password)
     or die("Impossibile connettersi!");

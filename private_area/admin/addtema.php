@@ -14,7 +14,7 @@ if(isset($_POST["Inserisci"])){
 	if(!empty($_POST['nome'])){
 			
 			$test=true;
-			$query="INSERT INTO tema (`nome`,`descrizione`) VALUES ('".$_POST['nome']."', '".$_POST['descrizione']."')";
+			$query="INSERT INTO tema (`nome`,`descrizione`) VALUES ('".addslashes($_POST['nome'])."', '".addslashes($_POST['descrizione'])."')";
 			mysql_query($query,$conn) or $test=false;
 			connection_db_close($conn);
 			
